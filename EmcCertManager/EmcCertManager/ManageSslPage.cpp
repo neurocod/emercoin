@@ -1,0 +1,128 @@
+﻿//ManageSslPage.cpp by Konstantine Kozachuck as neurocod
+#include "pch.h"
+#include "ManageSslPage.h"
+#include "Settings.h"
+#include "CertTableModel.h"
+#include "EmailLineEdit.h"
+#include "CertTableView.h"
+
+ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
+	setWindowTitle(tr("Certificates"));
+	auto lay = new QVBoxLayout(this);
+	{
+		auto lay2 = new QHBoxLayout;
+		lay->addLayout(lay2);
+
+		auto btnNew = new QPushButton(tr("New"));
+		connect(btnNew, &QAbstractButton::clicked, this, &ManageSslPage::onCreate);
+		lay2->addWidget(btnNew);
+
+		_btnDelete = new QPushButton(tr("X Delete"));
+		connect(_btnDelete, &QAbstractButton::clicked, this, &ManageSslPage::onDelete);
+		lay2->addWidget(_btnDelete);
+
+		lay2->addStretch();
+	}
+
+	_view = new CertTableView;
+	lay->addWidget(_view);
+}
+struct ManageSslPage::TemplateDialog: public QDialog {
+	QLineEdit* _name = new QLineEdit;
+	EmailLineEdit* _email = new EmailLineEdit;
+	QLineEdit* _ecard = new QLineEdit;
+	QLabel* _emailErrorDesc = new QLabel;
+	QPushButton* _okBtn = 0;
+	TemplateDialog(QWidget*parent): QDialog(parent) {
+		setWindowTitle(tr("New certificate"));
+
+		auto lay = new QVBoxLayout(this);
+		auto form = new QFormLayout;
+		lay->addLayout(form);
+		const QString strMandatoryField = tr("Mandatory field");
+		_name->setPlaceholderText(strMandatoryField);
+		form->addRow(tr("Name or nickname:"), _name);
+		{
+			auto lay = new QVBoxLayout;
+			lay->addWidget(_email);
+			_email->setPlaceholderText(strMandatoryField);
+			lay->addWidget(_emailErrorDesc);
+			_email->validator()->_labelError = _emailErrorDesc;
+			_emailErrorDesc->hide();
+			form->addRow(tr("E-mail:"), lay);
+		}
+		form->addRow(tr("Your UID for retrieve vCard info:"), _ecard);
+		_ecard->setPlaceholderText(tr("Optional field"));
+
+		auto box = new QDialogButtonBox;
+		lay->addWidget(box);
+		_okBtn = box->addButton(QDialogButtonBox::Ok);
+		auto cancel = box->addButton(QDialogButtonBox::Cancel);
+		_okBtn->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/standardbutton-apply-32.png"));
+		cancel->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/standardbutton-cancel-32.png"));
+		connect(_okBtn, &QAbstractButton::clicked, this, &QDialog::accept);
+		connect(cancel, &QAbstractButton::clicked, this, &QDialog::reject);
+		connect(_email, &QLineEdit::textChanged, this, &TemplateDialog::enableOk);
+		connect(_name, &QLineEdit::textChanged, this, &TemplateDialog::enableOk);
+		connect(_ecard, &QLineEdit::textChanged, this, &TemplateDialog::enableOk);
+		lay->addStretch();
+		_okBtn->setEnabled(false);
+	}
+	bool allValid()const {
+		return _email->hasAcceptableInput() && !_name->text().trimmed().isEmpty();
+	}
+	void enableOk() {
+		_okBtn->setEnabled(allValid());
+	}
+	virtual void accept()override {
+		if(allValid())
+			QDialog::accept();
+	}
+};
+void ManageSslPage::onCreate() {
+	TemplateDialog dlg(this);
+	if(dlg.exec()!=QDialog::Accepted)
+		return;
+	const QString name = dlg._name->text().trimmed();
+	const QString mail = dlg._email->text().trimmed();
+	const QString ecard = dlg._ecard->text().trimmed();
+	QString contents = QString("/CN=%1/emailAddress=%2")
+		.arg(name).arg(mail);
+	if(!ecard.isEmpty())
+		contents += "/UID=" + ecard;
+	contents += '\n';
+	QString fileNameTemplate = name + ' ' + mail;
+	for(QChar & c : fileNameTemplate) {
+		if(c.isDigit() || c.isLetter() || c==' ' || c=='.' || c=='@')
+			c;
+		else
+			c = '.';
+	}
+	QString fileName = QUuid::createUuid().toString();
+	fileName.remove('{');
+	fileName.remove('-');
+	fileName.remove('}');
+	fileName += ".tpl";
+	QDir dir = Settings::certDir();
+	QString path = dir.absoluteFilePath(fileName);
+	{
+		QFile file(fileName);
+		if(!file.open(QFile::WriteOnly)) {
+			QMessageBox::critical(this, tr("Can't write file %1").arg(path), file.errorString());
+			return;
+		}
+		file.write(contents.toUtf8());
+	}
+	_view->model()->reload();
+	QMessageBox::critical(this, tr("Template created"), tr("Path: %1").arg(path));
+}
+void ManageSslPage::onDelete() {
+	auto rows = _view->selectionModel()->selectedRows();
+	_view->model()->removeRows(rows);
+}
+/*
+генерировать сертификат по шаблону
+кнопка открытия файла в explorer
+удаление сертификата
+удаление шаблона и сертификата
+*/
