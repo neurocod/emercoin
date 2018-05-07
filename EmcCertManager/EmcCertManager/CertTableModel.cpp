@@ -58,6 +58,7 @@ QString CertTableModel::Row::loadFromTemplateFile(const QFileInfo & entry) {//QS
 }
 using Shell = ShellImitation;
 QString CertTableModel::Row::generateCert(CertType ctype, QString & sha256)const {//QString::isEmpty -> ok
+	Shell::maybeCreateLogger();
 	QString certType;
 	if(ctype == EC) {
 		certType = "EC";

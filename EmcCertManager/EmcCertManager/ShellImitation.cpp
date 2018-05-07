@@ -2,11 +2,30 @@
 #include "pch.h"
 #include "ShellImitation.h"
 
+QPointer<QListWidget> ShellImitation::s_logger;
+void ShellImitation::maybeLog(const QString & s) {
+	if(s_logger && QThread::currentThread()==qApp->thread()) {
+		s_logger->addItem(s);
+		QCoreApplication::processEvents();
+	}
+}
+void ShellImitation::maybeCreateLogger() {
+	if(s_logger || QThread::currentThread() != qApp->thread())
+		return;
+	s_logger = new QListWidget();
+	s_logger->setWindowTitle(tr("Operation result"));
+	s_logger->showNormal();
+}
+QString ShellImitation::tr(const char*c) {
+	return QObject::tr(c);
+}
 bool ShellImitation::touch(const QDir & dir, const QString & fileName, QString & err) {
 	QString path = dir.absoluteFilePath(fileName);
+	maybeLog(tr("Touching %1").arg(path));
 	QFile file(path);
 	if(!file.open(QIODevice::WriteOnly)) {
-		err = QObject::tr("Can't open file %1: %2").arg(path).arg(file.errorString());
+		err = tr("Can't open file %1: %2").arg(path).arg(file.errorString());
+		maybeLog(err);
 		return false;
 	}
 	file.close();
@@ -14,6 +33,7 @@ bool ShellImitation::touch(const QDir & dir, const QString & fileName, QString &
 	return true;
 }
 bool ShellImitation::mkpath(const QDir & dir, const QString & path, QString & error, int tries) {
+	maybeLog(tr("mkpath %1").arg(dir.absoluteFilePath(path)));
 	for(int i = 0; i < tries; ++i) {
 		if(i>0)
 			QThread::msleep(50);
@@ -23,14 +43,18 @@ bool ShellImitation::mkpath(const QDir & dir, const QString & path, QString & er
 				return true;
 			}
 		}
+		maybeLog(tr("Trying again..."));
 	}
-	error = QObject::tr("Can't create directory %1").arg(dir.absoluteFilePath(path));
+	error = tr("Can't create directory %1").arg(dir.absoluteFilePath(path));
+	maybeLog(error);
 	return false;
 }
 bool ShellImitation::write(const QString & path, const QByteArray & what, QString &err) {
+	maybeLog(tr("Writing into %1...").arg(path));
 	QFile file(path);
 	if(!file.open(QFile::WriteOnly | QFile::Truncate)) {
-		err = QObject::tr("Can't open file %1: %2").arg(path).arg(file.errorString());
+		err = tr("Can't open file %1: %2").arg(path).arg(file.errorString());
+		maybeLog(err);
 		return false;
 	}
 	auto written = file.write(what);
@@ -38,14 +62,16 @@ bool ShellImitation::write(const QString & path, const QByteArray & what, QStrin
 		err.clear();
 		return true;
 	}
-	err = QObject::tr("Can't write %1: only %2 bytes written instead of %3, reason: %4")
+	err = tr("Can't write %1: only %2 bytes written instead of %3, reason: %4")
 		.arg(path)
 		.arg(written)
 		.arg(what.size())
 		.arg(file.errorString());
+	maybeLog(err);
 	return false;
 }
 bool ShellImitation::removeRecursiveFilesOnly(QDir & dir, QString &err) {
+	maybeLog(tr("Remove recursive from %1").arg(dir.absolutePath()));
 	err.clear();
 	QDirIterator it(dir, QDirIterator::Subdirectories);
 	while(it.hasNext()) {
@@ -53,8 +79,10 @@ bool ShellImitation::removeRecursiveFilesOnly(QDir & dir, QString &err) {
 		QFileInfo info(path);
 		if(info.isDir())
 			continue;
+		maybeLog(tr("... removing %1").arg(path));
 		if(!dir.remove(path)) {
-			err = QObject::tr("Can't delete %1").arg(path);
+			err = tr("Can't delete %1").arg(path);
+			maybeLog(err);
 			return false;
 		}
 	}
