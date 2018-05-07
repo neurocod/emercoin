@@ -18,7 +18,7 @@ InfoCardsWidget::InfoCardsWidget(QWidget*parent): QWidget(parent) {
 		connect(btnNew, &QAbstractButton::clicked, this, &InfoCardsWidget::onCreate);
 		lay2->addWidget(btnNew);
 
-		_btnDelete = new QPushButton(tr("X Delete"));
+		_btnDelete = new QPushButton(QIcon(":/qt-project.org/styles/commonstyle/images/standardbutton-cancel-32.png"), tr("Delete"));
 		connect(_btnDelete, &QAbstractButton::clicked, this, &InfoCardsWidget::onDelete);
 		lay2->addWidget(_btnDelete);
 	}

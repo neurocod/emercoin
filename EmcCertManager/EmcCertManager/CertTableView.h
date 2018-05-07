@@ -13,4 +13,5 @@ class CertTableView: public TableView {
 		void onGenerateCert();
 		struct Dialog;
 		CertTableModel* _model = 0;
+		QAction* _actShowInExplorer = 0;
 };

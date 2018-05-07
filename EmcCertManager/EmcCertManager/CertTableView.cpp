@@ -29,6 +29,7 @@ struct CertTableView::Dialog: public QDialog {
 	QLineEdit* _pass2 = new QLineEdit;
 	QLabel * _labelError = new QLabel;
 	Dialog(QWidget*parent): QDialog(parent) {
+		setWindowFlag(Qt::WindowContextHelpButtonHint, false);
 		auto lay = new QVBoxLayout(this);
 		auto form = new QFormLayout;
 		lay->addLayout(form);
@@ -40,9 +41,9 @@ struct CertTableView::Dialog: public QDialog {
 		_pass->setEchoMode(QLineEdit::Password);
 		_pass2->setEchoMode(QLineEdit::Password);
 		form->addRow(new QLabel(tr("Enter password for certificate package.\n"
-			"You will use this password, when install certificate into browser:")));
-		//form->addRow(tr("Password:"), _pass);
-		//form->addRow(tr("Password again:"), _pass2);
+			"You will use this password when installing certificate into browser:")));
+		form->addRow(tr("Password:"), _pass);
+		form->addRow(tr("Password again:"), _pass2);
 		form->addRow(_labelError);
 		_labelError->hide();
 		{

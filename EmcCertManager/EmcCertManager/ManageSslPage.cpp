@@ -14,10 +14,12 @@ ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
 		lay->addLayout(lay2);
 
 		auto btnNew = new QPushButton(tr("New"));
+		btnNew->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/standardbutton-yes-32.png"));
 		connect(btnNew, &QAbstractButton::clicked, this, &ManageSslPage::onCreate);
 		lay2->addWidget(btnNew);
 
-		_btnDelete = new QPushButton(tr("X Delete"));
+		_btnDelete = new QPushButton(tr("Delete"));
+		_btnDelete->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/standardbutton-cancel-32.png"));
 		connect(_btnDelete, &QAbstractButton::clicked, this, &ManageSslPage::onDelete);
 		lay2->addWidget(_btnDelete);
 
@@ -35,6 +37,7 @@ struct ManageSslPage::TemplateDialog: public QDialog {
 	QPushButton* _okBtn = 0;
 	TemplateDialog(QWidget*parent): QDialog(parent) {
 		setWindowTitle(tr("New certificate"));
+		setWindowFlag(Qt::WindowContextHelpButtonHint, false);
 
 		auto lay = new QVBoxLayout(this);
 		auto form = new QFormLayout;
@@ -69,7 +72,11 @@ struct ManageSslPage::TemplateDialog: public QDialog {
 		_okBtn->setEnabled(false);
 	}
 	bool allValid()const {
-		return _email->hasAcceptableInput() && !_name->text().trimmed().isEmpty();
+		if(_name->text().trimmed().isEmpty())
+			return false;
+		if(_email->text().isEmpty())//first - simplified check to prevent detailed description
+			return false;
+		return _email->hasAcceptableInput();
 	}
 	void enableOk() {
 		_okBtn->setEnabled(allValid());

@@ -10,6 +10,7 @@ class CertTableModel: public QAbstractTableModel {
 		ColMenu,
 		ColCertFile,
 		ColCertCreated,
+		//ColTemplateFile,
 
 		ColEnd
 	};

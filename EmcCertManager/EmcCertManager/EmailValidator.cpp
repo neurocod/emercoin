@@ -69,6 +69,8 @@ QValidator::State EmailValidator::checkDomain(const QString & str, int & pos)con
 	return set(QValidator::Acceptable);
 }
 EmailValidator::State EmailValidator::validate(QString &str, int &pos2)const {
+	if(str.isEmpty())
+		return set("Empty email");
 	int pos = 0;
 	const int indexA = str.indexOf('@');
 	if(-1 == indexA) {

@@ -93,9 +93,9 @@ QString CertTableModel::Row::removeFiles() {
 			return QObject::tr("Can't remove %1").arg(_certFile);
 		}
 	}
-	if(!_templateLine.isEmpty() && QFile::exists(_templateLine)) {
+	if(!_templateLine.isEmpty() && QFile::exists(_templateFile)) {
 		if(!QFile::remove(_templateLine)) {
-			return QObject::tr("Can't remove %1").arg(_templateLine);
+			return QObject::tr("Can't remove %1").arg(_templateFile);
 		}
 	}
 	return QString();
@@ -167,6 +167,7 @@ QVariant CertTableModel::headerData(int section, Qt::Orientation orientation, in
 				case ColMenu: return tr("Generate");
 				case ColCertFile: return tr("certificate file");
 				case ColCertCreated: return tr("creation date");
+				//case ColTemplateFile: return tr("Template file");
 			}
 		}
 	}
@@ -186,6 +187,7 @@ QVariant CertTableModel::data(const QModelIndex &index, int role) const {
 			case ColCertFile: return item._certFile;
 			case ColMenu: return QVariant();
 			case ColCertCreated: return item._certCreated.toString("yyyy.MM.dd HH:mm:ss");
+			//case ColTemplateFile: return item._templateFile;
 		}
 	}
 	return QVariant();
