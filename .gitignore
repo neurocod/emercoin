@@ -44,6 +44,47 @@ src/qt/forms/ui_*.h
 *.pro.user
 src/qt/test/moc*.cpp
 
+# Visual Studio
+.vs
+*.VC.db
+*.VC.opendb
+*.[Oo]bj
+*.user
+*.aps
+*.pch
+*.vsp
+*.vspscc
+*.vssscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.[Cc]ache
+*.ilk
+*.log
+*.lib
+*.sbr
+*.sdf
+*.opensdf
+*.unsuccessfulbuild
+ipch/
+obj/
+[Bb]in
+[Dd]ebug*/
+[Rr]elease*/
+packages
+*.nupkg
+*.ncrunchsolution
+*.dot[Cc]over
+Ankh.NoLoad
+# VS Upgrade stuff
+UpgradeLog.XML
+UpgradeLog.htm
+_UpgradeReport_Files/
+
 .deps
 .dirstamp
 .libs
