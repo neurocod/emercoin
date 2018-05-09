@@ -58,7 +58,6 @@ QString CertTableModel::Row::loadFromTemplateFile(const QFileInfo & entry) {//QS
 }
 using Shell = ShellImitation;
 QString CertTableModel::Row::generateCert(CertType ctype, QString & sha256)const {//QString::isEmpty -> ok
-	Shell::maybeCreateLogger();
 	QString certType;
 	if(ctype == EC) {
 		certType = "EC";
@@ -89,14 +88,12 @@ QString CertTableModel::Row::generateCert(CertType ctype, QString & sha256)const
 	return QString();
 }
 QString CertTableModel::Row::removeFiles() {
-	if(!_certFile.isEmpty() && QFile::exists(_certFile)) {
-		if(!QFile::remove(_certFile)) {
-			return QObject::tr("Can't remove %1").arg(_certFile);
-		}
-	}
-	if(!_templateLine.isEmpty() && QFile::exists(_templateFile)) {
-		if(!QFile::remove(_templateLine)) {
-			return QObject::tr("Can't remove %1").arg(_templateFile);
+	QString files[] = { _certFile, _templateFile };
+	for(auto file: files) {
+		if(!file.isEmpty() && QFile::exists(file)) {
+			if(!QFile::remove(file)) {
+				return QObject::tr("Can't remove %1").arg(file);
+			}
 		}
 	}
 	return QString();
@@ -115,6 +112,7 @@ void CertTableModel::removeRows(const QModelIndexList & rows) {
 	Row & r = _rows[row];
 	QString error = r.removeFiles();
 	if(!error.isEmpty()) {
+		reload();
 		QMessageBox::critical(0, tr("Error"), tr("Error removing files: %1").arg(error));
 		return;
 	}

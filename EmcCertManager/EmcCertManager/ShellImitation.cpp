@@ -9,13 +9,6 @@ void ShellImitation::maybeLog(const QString & s) {
 		QCoreApplication::processEvents();
 	}
 }
-void ShellImitation::maybeCreateLogger() {
-	if(s_logger || QThread::currentThread() != qApp->thread())
-		return;
-	s_logger = new QListWidget();
-	s_logger->setWindowTitle(tr("Operation result"));
-	s_logger->showNormal();
-}
 QString ShellImitation::tr(const char*c) {
 	return QObject::tr(c);
 }

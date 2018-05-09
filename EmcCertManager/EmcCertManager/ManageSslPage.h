@@ -14,4 +14,6 @@ class ManageSslPage: public QWidget {
 
 		CertTableView* _view = 0;
 		struct TemplateDialog;
+		struct Logger;
+		Logger* _logger = 0;
 };

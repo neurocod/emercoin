@@ -4,7 +4,6 @@
 struct ShellImitation {
 	static QPointer<QListWidget> s_logger;
 	static void maybeLog(const QString & s);
-	static void maybeCreateLogger();
 
 	static bool touch(const QDir & dir, const QString & fileName, QString & err);
 	static bool mkpath(const QDir & dir, const QString & path, QString & error, int tries = 5);

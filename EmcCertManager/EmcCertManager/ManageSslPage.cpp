@@ -5,7 +5,13 @@
 #include "CertTableModel.h"
 #include "EmailLineEdit.h"
 #include "CertTableView.h"
+#include "ShellImitation.h"
 
+struct ManageSslPage::Logger: public QListWidget {
+	Logger() {
+		setWindowTitle(tr("Operation result"));
+	}
+};
 ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
 	setWindowTitle(tr("Certificates"));
 	auto lay = new QVBoxLayout(this);
@@ -28,6 +34,10 @@ ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
 
 	_view = new CertTableView;
 	lay->addWidget(_view);
+
+	_logger = new Logger();
+	lay->addWidget(_logger);
+	ShellImitation::s_logger = _logger;
 }
 struct ManageSslPage::TemplateDialog: public QDialog {
 	QLineEdit* _name = new QLineEdit;
@@ -132,4 +142,11 @@ void ManageSslPage::onDelete() {
 кнопка открытия файла в explorer
 удаление сертификата
 удаление шаблона и сертификата
+логировать и другие операции
+просмотреть что еще не сделано
+протестировать
+прочитать как загружать в браузер
+забить втуда сертификаты
+импортировать их в браузер
+залогинится в браузере
 */

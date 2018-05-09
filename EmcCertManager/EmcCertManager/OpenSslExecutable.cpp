@@ -29,7 +29,7 @@ bool OpenSslExecutable::exec(const QStringList & args) {
 	start(path(), args, QIODevice::ReadWrite
 		//|QIODevice::Text
 	);
-	const int maxTimeout = 10 * 1000;
+	const int maxTimeout = 10000 * 1000;
 	if(!waitForStarted(maxTimeout))
 		return false;	
 	if(!waitForFinished(maxTimeout))
