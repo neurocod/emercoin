@@ -7,8 +7,8 @@ class CertTableModel: public QAbstractTableModel {
 		ColName,
 		ColMail,
 		ColVcardId,
-		ColMenu,
 		ColCertFile,
+		ColMenu,
 		ColCertCreated,
 		//ColTemplateFile,
 
@@ -36,6 +36,7 @@ class CertTableModel: public QAbstractTableModel {
 	
 	CertTableModel(QObject*parent);
 	void reload();
+	int indexByFile(const QString & s)const;
 	void removeRows(const QModelIndexList & rows);
 	virtual int rowCount(const QModelIndex& index = QModelIndex())const override;
 	virtual int columnCount(const QModelIndex& index = QModelIndex())const override;

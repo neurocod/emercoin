@@ -191,3 +191,10 @@ QVariant CertTableModel::data(const QModelIndex &index, int role) const {
 	}
 	return QVariant();
 }
+int CertTableModel::indexByFile(const QString & s)const {
+	for(int i = 0; i < _rows.count(); ++i) {
+		if(_rows[i]._templateFile==s || _rows[i]._certFile == s)
+			return i;
+	}
+	return -1;
+}

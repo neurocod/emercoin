@@ -2,10 +2,10 @@
 #include "pch.h"
 #include "ShellImitation.h"
 
-QPointer<QListWidget> ShellImitation::s_logger;
+QPointer<QTextBrowser> ShellImitation::s_logger;
 void ShellImitation::maybeLog(const QString & s) {
 	if(s_logger && QThread::currentThread()==qApp->thread()) {
-		s_logger->addItem(s);
+		s_logger->append(s + '\n');
 		QCoreApplication::processEvents();
 	}
 }

@@ -4,5 +4,7 @@
 
 QDir Settings::certDir() {
 	//TODO
-	return "D:\\g\\emcssl";
+	QDir dir = "D:\\g\\emcssl";
+	Q_ASSERT(dir.exists());
+	return dir;
 }

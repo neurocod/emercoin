@@ -2,7 +2,7 @@
 #pragma once
 
 struct ShellImitation {
-	static QPointer<QListWidget> s_logger;
+	static QPointer<QTextBrowser> s_logger;
 	static void maybeLog(const QString & s);
 
 	static bool touch(const QDir & dir, const QString & fileName, QString & err);

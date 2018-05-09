@@ -7,7 +7,7 @@
 #include "CertTableView.h"
 #include "ShellImitation.h"
 
-struct ManageSslPage::Logger: public QListWidget {
+struct ManageSslPage::Logger: public QTextBrowser{
 	Logger() {
 		setWindowTitle(tr("Operation result"));
 	}
@@ -123,15 +123,21 @@ void ManageSslPage::onCreate() {
 	QDir dir = Settings::certDir();
 	QString path = dir.absoluteFilePath(fileName);
 	{
-		QFile file(fileName);
+		QFile file(path);
 		if(!file.open(QFile::WriteOnly)) {
 			QMessageBox::critical(this, tr("Can't write file %1").arg(path), file.errorString());
 			return;
 		}
-		file.write(contents.toUtf8());
+		auto arr = contents.toUtf8();
+		auto written = file.write(arr);
+		if(written!=arr.size())
+			QMessageBox::critical(this, tr("Can't write file %1").arg(path), file.errorString());
 	}
 	_view->model()->reload();
-	QMessageBox::critical(this, tr("Template created"), tr("Path: %1").arg(path));
+	int index = _view->model()->indexByFile(path);
+	Q_ASSERT(index!=-1);
+	_view->selectRow(index);
+	_view->setFocus();
 }
 void ManageSslPage::onDelete() {
 	auto rows = _view->selectionModel()->selectedRows();
