@@ -5,7 +5,7 @@
 QPointer<QTextBrowser> ShellImitation::s_logger;
 void ShellImitation::maybeLog(const QString & s) {
 	if(s_logger && QThread::currentThread()==qApp->thread()) {
-		s_logger->append(s + '\n');
+		s_logger->append(s);
 		QCoreApplication::processEvents();
 	}
 }
@@ -43,7 +43,7 @@ bool ShellImitation::mkpath(const QDir & dir, const QString & path, QString & er
 	return false;
 }
 bool ShellImitation::write(const QString & path, const QByteArray & what, QString &err) {
-	maybeLog(tr("Writing into %1...").arg(path));
+	maybeLog(tr("Writing %1...").arg(path));
 	QFile file(path);
 	if(!file.open(QFile::WriteOnly | QFile::Truncate)) {
 		err = tr("Can't open file %1: %2").arg(path).arg(file.errorString());

@@ -25,18 +25,24 @@ QString OpenSslExecutable::errorString()const {
 	return __super::errorString() + '\n' + _strOutput;
 }
 bool OpenSslExecutable::exec(const QStringList & args) {
+	log(tr("Starting openssl ") + args.join(' '));
 	_strOutput.clear();
-	start(path(), args, QIODevice::ReadWrite
-		//|QIODevice::Text
-	);
+	start(path(), args, QIODevice::ReadWrite);
 	const int maxTimeout = 10000 * 1000;
-	if(!waitForStarted(maxTimeout))
-		return false;	
-	if(!waitForFinished(maxTimeout))
+	if(!waitForStarted(maxTimeout)) {
+		log(tr("Can't start: %1").arg(error()));
 		return false;
+	}
+	if(!waitForFinished(maxTimeout)) {
+		log(tr("Failed waitinf to finish: %1").arg(error()));
+		return false;
+	}
 	readToMe();
-	if(QProcess::NormalExit != exitStatus())
+	if(QProcess::NormalExit != exitStatus()) {
+		log(tr("Exit status = %1").arg(exitStatus()));
 		return false;
+	}
+	log(tr("Finished ok"));
 	return true;
 }
 void OpenSslExecutable::readToMe() {
@@ -138,4 +144,10 @@ bool OpenSslExecutable::sha256FromCertificate(const QString & baseName, QString 
 	sha256.remove(0, prefix.count());
 	sha256.toLower();
 	return true;
+}
+void OpenSslExecutable::log(const QString & s) {
+	if(_logger) {
+		_logger->append(s);
+		QCoreApplication::processEvents();
+	}
 }

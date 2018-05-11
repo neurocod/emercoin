@@ -78,6 +78,7 @@ QString CertTableModel::Row::generateCert(CertType ctype, QString & sha256)const
 	|| !Shell::write(db.absoluteFilePath("serial"), _baseName.toLatin1(), err))
 		return err;
 	OpenSslExecutable openssl;
+	openssl._logger = Shell::s_logger;
 	if(!openssl.generateKeyAndCertificateRequest(_baseName, _templateLine)
 		|| !openssl.generateCertificate(_baseName, CA_DIR)
 		|| !openssl.createCertificatePair(_baseName, CA_DIR)

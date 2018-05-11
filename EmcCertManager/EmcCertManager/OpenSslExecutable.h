@@ -12,9 +12,11 @@ class OpenSslExecutable: public QProcess {
 		bool generateCertificate(const QString & baseName, const QString & configDir);
 		bool createCertificatePair(const QString & baseName, const QString & configDir);
 		bool sha256FromCertificate(const QString & baseName, QString & sha256);
+		QTextBrowser* _logger = 0;
 	protected:
 		void willNeedUserInput(bool b=true);
 		bool existsOrExit(const QDir & dir, const QString & file);
 		bool deleteOrExit(QDir & dir, const QString & file, int tries=5);
 		void readToMe();
+		void log(const QString & s);
 };
