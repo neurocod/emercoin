@@ -67,6 +67,7 @@ bool OpenSslExecutable::deleteOrExit(QDir & dir, const QString & file, int tries
 	return false;
 }
 bool OpenSslExecutable::generateKeyAndCertificateRequest(const QString & baseName, const QString & subj) {
+	log(tr("Generate key and certificate request:"));
 	const QString keyFile = baseName + ".key";
 	const QString csrFile = baseName + ".csr";
 	QDir dir = workingDirectory();
@@ -83,6 +84,7 @@ bool OpenSslExecutable::generateKeyAndCertificateRequest(const QString & baseNam
 	return existsOrExit(dir, keyFile) && existsOrExit(dir, csrFile);
 }
 bool OpenSslExecutable::generateCertificate(const QString & baseName, const QString & configDir) {
+	log(tr("Generate certificate:"));
 	const QString csrFile = baseName + ".csr";
 	const QString crtFile = baseName + ".crt";
 	QDir dir = workingDirectory();
@@ -99,6 +101,7 @@ bool OpenSslExecutable::generateCertificate(const QString & baseName, const QStr
 	return existsOrExit(dir, crtFile);
 }
 bool OpenSslExecutable::createCertificatePair(const QString & baseName, const QString & configDir) {
+	log(tr("Create certificate pair:"));
 	willNeedUserInput();
 	const QString keyFile = baseName + ".key";
 	const QString crtFile = baseName + ".crt";
@@ -121,6 +124,7 @@ bool OpenSslExecutable::createCertificatePair(const QString & baseName, const QS
 	return existsOrExit(dir, p12);
 }
 bool OpenSslExecutable::sha256FromCertificate(const QString & baseName, QString & sha256) {
+	log(tr("sha256 from certificate..."));
 	willNeedUserInput(false);
 	const QString crtFile = baseName + ".crt";
 	QDir dir = workingDirectory();
@@ -142,7 +146,13 @@ bool OpenSslExecutable::sha256FromCertificate(const QString & baseName, QString 
 	sha256 = _strOutput;
 	sha256.remove(':');
 	sha256.remove(0, prefix.count());
-	sha256.toLower();
+	sha256 = sha256.toLower();
+
+	log("_______________________");
+	log(tr("Please, deposit into EmerCoin NVS pair:"));
+	log(tr("key: ") + "ssl:" + baseName);
+	log(tr("value: ") + "sha256=" + sha256);
+	log("_______________________");
 	return true;
 }
 void OpenSslExecutable::log(const QString & s) {

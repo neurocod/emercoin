@@ -87,7 +87,7 @@ void CertTableView::onGenerateCert() {
 	Dialog dlg(this);
 	if(dlg.exec()!=QDialog::Accepted)
 		return;
-	auto certType = (CertTableModel::CertType)dlg._certType->currentData().toInt();;
+	auto certType = (CertTableModel::CertType)dlg._certType->currentData().toInt();
 	QString sha256;
 	QString msg = row.generateCert(certType, sha256);//dlg._pass->text()
 	if(!msg.isEmpty()) {
