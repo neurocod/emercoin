@@ -3,8 +3,5 @@
 
 class Settings {
 	public:
-		Settings() {}
-		virtual ~Settings() {}
-
 		static QDir certDir();
 };

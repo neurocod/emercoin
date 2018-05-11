@@ -3,7 +3,6 @@
 #include "Settings.h"
 
 QDir Settings::certDir() {
-	//TODO
 	QDir dir = "D:\\g\\emcssl";
 	Q_ASSERT(dir.exists());
 	return dir;

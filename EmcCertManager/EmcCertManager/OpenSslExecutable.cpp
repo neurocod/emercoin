@@ -7,6 +7,7 @@ OpenSslExecutable::OpenSslExecutable() {
 	setWorkingDirectory(Settings::certDir().absolutePath());
 }
 void OpenSslExecutable::willNeedUserInput(bool b) {
+#ifdef Q_OS_WIN
 	if(!b) {
 		setCreateProcessArgumentsModifier([] (QProcess::CreateProcessArguments *args) {});
 		return;
@@ -17,9 +18,14 @@ void OpenSslExecutable::willNeedUserInput(bool b) {
 		args->startupInfo->dwFlags |= STARTF_USEFILLATTRIBUTE;
 		args->startupInfo->dwFillAttribute = BACKGROUND_BLUE | FOREGROUND_RED | FOREGROUND_INTENSITY;
 	});
+#endif
 }
 QString OpenSslExecutable::path()const {
-	return Settings::certDir().absoluteFilePath("shell.w32-ix86/openssl.exe");
+#ifdef Q_OS_WIN
+	return "openssl.exe";
+	//return Settings::certDir().absoluteFilePath("shell.w32-ix86/openssl.exe");
+#endif
+	return "openssl";
 }
 QString OpenSslExecutable::errorString()const {
 	return __super::errorString() + '\n' + _strOutput;
