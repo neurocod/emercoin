@@ -164,7 +164,7 @@ QVariant CertTableModel::headerData(int section, Qt::Orientation orientation, in
 				case ColName: return tr("Name");
 				case ColMail: return tr("email");
 				case ColVcardId: return tr("vCard id");
-				case ColMenu: return tr("Generate");
+				case ColMenu: return tr("Menu");
 				case ColCertFile: return tr("certificate file");
 				case ColCertCreated: return tr("creation date");
 				//case ColTemplateFile: return tr("Template file");

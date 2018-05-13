@@ -17,10 +17,20 @@ CertTableView::Model* CertTableView::model()const {
 }
 void CertTableView::recreateButtons() {
 	for(int row = 0; row < _model->rowCount(); ++row) {
-		auto b = new QPushButton(tr("Generate again"));
-		b->setProperty("row", row);
-		connect(b, &QAbstractButton::clicked, this, &CertTableView::onGenerateCert);
-		setIndexWidget(_model->index(row, Model::ColMenu), b);
+		auto w = new QToolBar;
+		setIndexWidget(_model->index(row, Model::ColMenu), w);
+		
+		auto gen = new QAction(tr("Generate again"));
+		gen->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/standardbutton-yes-32.png"));
+		gen->setProperty("row", row);
+		connect(gen, &QAction::triggered, this, &CertTableView::onGenerateCert);
+		w->addAction(gen);
+
+		auto show = new QAction(tr("Show in explorer"));
+		show->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/standardbutton-open-32.png"));
+		show->setProperty("row", row);
+		connect(show, &QAction::triggered, this, &CertTableView::showInExplorer);
+		w->addAction(show);
 	}
 }
 struct CertTableView::Dialog: public QDialog {
@@ -75,8 +85,20 @@ struct CertTableView::Dialog: public QDialog {
 		QDialog::accept();
 	}
 };
+void CertTableView::showInExplorer() {
+	auto b = qobject_cast<QAction*>(sender());
+	Q_ASSERT(b);
+	if(!b)
+		return;
+	int nRow = b->property("row").toInt();
+	if(nRow<0 || nRow >= _model->rowCount())
+		return;
+	const auto & row = _model->_rows[nRow];
+	auto url = QUrl::fromLocalFile(QFileInfo(row._templateFile).dir().absolutePath());
+	QDesktopServices::openUrl(url);
+}
 void CertTableView::onGenerateCert() {
-	auto b = qobject_cast<QPushButton*>(sender());
+	auto b = qobject_cast<QAction*>(sender());
 	Q_ASSERT(b);
 	if(!b)
 		return;
