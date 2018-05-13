@@ -85,6 +85,39 @@ struct CertTableView::Dialog: public QDialog {
 		QDialog::accept();
 	}
 };
+void CertTableView::showInGraphicalShell(QWidget *parent, const QString &pathIn) {
+#ifdef Q_OS_WIN
+	const QString explorer = "explorer.exe";
+	QString param;
+	if(!QFileInfo(pathIn).isDir())
+		param = QLatin1String("/select,");
+	param += QDir::toNativeSeparators(pathIn);
+	QString command = explorer + " " + param;
+	if(!QProcess::startDetached(command)) {
+		QMessageBox::warning(parent,
+			tr("Launching Windows Explorer failed"),
+			tr("Could not find explorer.exe in path to launch Windows Explorer."));
+	}
+	return;
+#endif
+#if defined(Q_OS_MAC)
+	Q_UNUSED(parent)
+		QStringList scriptArgs;
+	scriptArgs << QLatin1String("-e")
+		<< QString::fromLatin1("tell application \"Finder\" to reveal POSIX file \"%1\"")
+		.arg(pathIn);
+	QProcess::execute(QLatin1String("/usr/bin/osascript"), scriptArgs);
+	scriptArgs.clear();
+	scriptArgs << QLatin1String("-e")
+		<< QLatin1String("tell application \"Finder\" to activate");
+	QProcess::execute("/usr/bin/osascript", scriptArgs);
+	return;
+#endif
+	// we cannot select a file here, because no file browser really supports it
+	const QFileInfo fileInfo(pathIn);
+	QString dir = fileInfo.isDir() ? fileInfo.absolutePath() : fileInfo.dir().absolutePath();
+	QDesktopServices::openUrl(QUrl::fromLocalFile(dir));
+}
 void CertTableView::showInExplorer() {
 	auto b = qobject_cast<QAction*>(sender());
 	Q_ASSERT(b);
@@ -94,8 +127,7 @@ void CertTableView::showInExplorer() {
 	if(nRow<0 || nRow >= _model->rowCount())
 		return;
 	const auto & row = _model->_rows[nRow];
-	auto url = QUrl::fromLocalFile(QFileInfo(row._templateFile).dir().absolutePath());
-	QDesktopServices::openUrl(url);
+	showInGraphicalShell(this, row._templateFile);
 }
 void CertTableView::onGenerateCert() {
 	auto b = qobject_cast<QAction*>(sender());

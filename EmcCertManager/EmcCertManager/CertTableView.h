@@ -12,6 +12,7 @@ class CertTableView: public TableView {
 		void recreateButtons();
 		void onGenerateCert();
 		void showInExplorer();
+		static void showInGraphicalShell(QWidget *parent, const QString &pathIn);
 		struct Dialog;
 		CertTableModel* _model = 0;
 };
