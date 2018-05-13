@@ -9,10 +9,11 @@ class CertTableView: public TableView {
 		using Model = CertTableModel;
 		Model* model()const;
 	protected:
+		CertTableModel* _model = 0;
+		struct Dialog;
 		void recreateButtons();
 		void onGenerateCert();
 		void showInExplorer();
 		static void showInGraphicalShell(QWidget *parent, const QString &pathIn);
-		struct Dialog;
-		CertTableModel* _model = 0;
+		int rowFromAction(QAction*a);
 };

@@ -144,10 +144,9 @@ void ManageSslPage::onDelete() {
 	_view->model()->removeRows(rows);
 }
 /*
-кнопка открытия файла в explorer
 удаление сертификата
 просмотреть что еще не сделано
-прочитать как загружать в браузер
+прочитать как загружать в браузер https://cryptor.net/tutorial/sozdaem-ssl-sertifikat-emcssl-dlya-avtorizacii-na-saytah
 забить втуда сертификаты
 импортировать их в браузер
 залогинится в браузере

@@ -20,15 +20,13 @@ void CertTableView::recreateButtons() {
 		auto w = new QToolBar;
 		setIndexWidget(_model->index(row, Model::ColMenu), w);
 		
-		auto gen = new QAction(tr("Generate again"));
+		auto gen = new QAction(tr("Generate again"), w);
 		gen->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/standardbutton-yes-32.png"));
-		gen->setProperty("row", row);
 		connect(gen, &QAction::triggered, this, &CertTableView::onGenerateCert);
 		w->addAction(gen);
 
-		auto show = new QAction(tr("Show in explorer"));
+		auto show = new QAction(tr("Show in explorer"), w);
 		show->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/standardbutton-open-32.png"));
-		show->setProperty("row", row);
 		connect(show, &QAction::triggered, this, &CertTableView::showInExplorer);
 		w->addAction(show);
 	}
@@ -118,12 +116,26 @@ void CertTableView::showInGraphicalShell(QWidget *parent, const QString &pathIn)
 	QString dir = fileInfo.isDir() ? fileInfo.absolutePath() : fileInfo.dir().absolutePath();
 	QDesktopServices::openUrl(QUrl::fromLocalFile(dir));
 }
+int CertTableView::rowFromAction(QAction*a) {
+	auto w = a->parentWidget();
+	Q_ASSERT(w);
+	if(!w)
+		return -1;
+	const int rows = _model->rowCount();
+	for(int row = 0; row < rows; ++row) {
+		auto w2 = indexWidget(_model->index(row, _model->ColMenu));
+		if(w==w2)
+			return row;
+	}
+	Q_ASSERT(0);
+	return -1;
+}
 void CertTableView::showInExplorer() {
 	auto b = qobject_cast<QAction*>(sender());
 	Q_ASSERT(b);
 	if(!b)
 		return;
-	int nRow = b->property("row").toInt();
+	int nRow = rowFromAction(b);
 	if(nRow<0 || nRow >= _model->rowCount())
 		return;
 	const auto & row = _model->_rows[nRow];
@@ -134,7 +146,7 @@ void CertTableView::onGenerateCert() {
 	Q_ASSERT(b);
 	if(!b)
 		return;
-	int nRow = b->property("row").toInt();
+	int nRow = rowFromAction(b);
 	if(nRow<0 || nRow >=_model->rowCount())
 		return;
 	const auto & row = _model->_rows[nRow];
