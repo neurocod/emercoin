@@ -20,7 +20,7 @@ ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
 		lay->addLayout(lay2);
 
 		auto btnNew = new QPushButton(tr("New"));
-		btnNew->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/standardbutton-yes-32.png"));
+		btnNew->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/file-32.png"));
 		connect(btnNew, &QAbstractButton::clicked, this, &ManageSslPage::onCreate);
 		lay2->addWidget(btnNew);
 
@@ -33,11 +33,16 @@ ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
 	}
 
 	_view = new CertTableView;
+	connect(_view->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ManageSslPage::enableDeleteButton);
+	enableDeleteButton();
 	lay->addWidget(_view);
 
 	_logger = new Logger();
 	lay->addWidget(_logger);
 	ShellImitation::s_logger = _logger;
+}
+void ManageSslPage::enableDeleteButton() {
+	_btnDelete->setEnabled(_view->selectionModel()->hasSelection());
 }
 struct ManageSslPage::TemplateDialog: public QDialog {
 	QLineEdit* _name = new QLineEdit;
@@ -136,8 +141,11 @@ void ManageSslPage::onCreate() {
 	_view->model()->reload();
 	int index = _view->model()->indexByFile(path);
 	Q_ASSERT(index!=-1);
+	if(-1==index)
+		return;
 	_view->selectRow(index);
 	_view->setFocus();
+	_view->generateCertForSelectedRow();
 }
 void ManageSslPage::onDelete() {
 	auto rows = _view->selectionModel()->selectedRows();
@@ -145,7 +153,7 @@ void ManageSslPage::onDelete() {
 }
 /*
 удаление сертификата
-просмотреть что еще не сделано
+добавить хелп/туториал/описание что это такое
 прочитать как загружать в браузер https://cryptor.net/tutorial/sozdaem-ssl-sertifikat-emcssl-dlya-avtorizacii-na-saytah
 забить втуда сертификаты
 импортировать их в браузер

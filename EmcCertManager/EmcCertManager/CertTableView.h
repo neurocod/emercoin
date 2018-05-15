@@ -8,11 +8,12 @@ class CertTableView: public TableView {
 		CertTableView();
 		using Model = CertTableModel;
 		Model* model()const;
+		void generateCertForSelectedRow();
 	protected:
 		CertTableModel* _model = 0;
 		struct Dialog;
 		void recreateButtons();
-		void onGenerateCert();
+		void generateCertByButton();
 		void showInExplorer();
 		static void showInGraphicalShell(QWidget *parent, const QString &pathIn);
 		int rowFromAction(QAction*a);

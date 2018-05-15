@@ -11,6 +11,7 @@ class ManageSslPage: public QWidget {
 
 		void onDelete();
 		void onCreate();
+		void enableDeleteButton();
 
 		CertTableView* _view = 0;
 		struct TemplateDialog;

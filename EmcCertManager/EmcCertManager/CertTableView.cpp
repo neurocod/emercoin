@@ -21,8 +21,8 @@ void CertTableView::recreateButtons() {
 		setIndexWidget(_model->index(row, Model::ColMenu), w);
 		
 		auto gen = new QAction(tr("Generate again"), w);
-		gen->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/standardbutton-yes-32.png"));
-		connect(gen, &QAction::triggered, this, &CertTableView::onGenerateCert);
+		gen->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/refresh-24.png"));
+		connect(gen, &QAction::triggered, this, &CertTableView::generateCertByButton);
 		w->addAction(gen);
 
 		auto show = new QAction(tr("Show in explorer"), w);
@@ -141,14 +141,23 @@ void CertTableView::showInExplorer() {
 	const auto & row = _model->_rows[nRow];
 	showInGraphicalShell(this, row._templateFile);
 }
-void CertTableView::onGenerateCert() {
+void CertTableView::generateCertByButton() {
 	auto b = qobject_cast<QAction*>(sender());
 	Q_ASSERT(b);
 	if(!b)
 		return;
 	int nRow = rowFromAction(b);
-	if(nRow<0 || nRow >=_model->rowCount())
+	if(nRow<0 || nRow >= _model->rowCount())
 		return;
+	clearSelection();
+	selectRow(nRow);
+	generateCertForSelectedRow();
+}
+void CertTableView::generateCertForSelectedRow() {
+	auto rows = selectionModel()->selectedRows();
+	if(rows.isEmpty())
+		return;
+	int nRow = rows[0].row();
 	const auto & row = _model->_rows[nRow];
 	Dialog dlg(this);
 	if(dlg.exec()!=QDialog::Accepted)

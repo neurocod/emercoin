@@ -52,7 +52,7 @@ QString CertTableModel::Row::loadFromTemplateFile(const QFileInfo & entry) {//QS
 	QFileInfo cert(certPath);
 	if(cert.exists()) {
 		_certFile = certPath;
-		_certCreated = cert.birthTime();
+		_certCreated = cert.lastModified();
 	}
 	return QString();
 }
@@ -78,7 +78,7 @@ QString CertTableModel::Row::generateCert(CertType ctype, QString & sha256)const
 	|| !Shell::write(db.absoluteFilePath("serial"), _baseName.toLatin1(), err))
 		return err;
 	OpenSslExecutable openssl;
-	openssl._logger = Shell::s_logger;
+	openssl.setLogger(Shell::s_logger);
 	if(!openssl.generateKeyAndCertificateRequest(_baseName, _templateLine)
 		|| !openssl.generateCertificate(_baseName, CA_DIR)
 		|| !openssl.createCertificatePair(_baseName, CA_DIR)
@@ -166,7 +166,7 @@ QVariant CertTableModel::headerData(int section, Qt::Orientation orientation, in
 				case ColVcardId: return tr("vCard id");
 				case ColMenu: return tr("Menu");
 				case ColCertFile: return tr("certificate file");
-				case ColCertCreated: return tr("creation date");
+				case ColCertCreated: return tr("Cert updated");
 				//case ColTemplateFile: return tr("Template file");
 			}
 		}

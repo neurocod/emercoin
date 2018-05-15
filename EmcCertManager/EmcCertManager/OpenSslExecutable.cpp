@@ -5,6 +5,12 @@
 
 OpenSslExecutable::OpenSslExecutable() {
 	setWorkingDirectory(Settings::certDir().absolutePath());
+#ifdef Q_OS_WIN
+	_path = "openssl.exe";
+#else
+	_path = "openssl";
+#endif
+	_path = QDir(QCoreApplication::applicationDirPath()).absoluteFilePath(_path);
 }
 void OpenSslExecutable::willNeedUserInput(bool b) {
 #ifdef Q_OS_WIN
@@ -20,36 +26,29 @@ void OpenSslExecutable::willNeedUserInput(bool b) {
 	});
 #endif
 }
-QString OpenSslExecutable::path()const {
-#ifdef Q_OS_WIN
-	return "openssl.exe";
-	//return Settings::certDir().absoluteFilePath("shell.w32-ix86/openssl.exe");
-#endif
-	return "openssl";
-}
 QString OpenSslExecutable::errorString()const {
 	return __super::errorString() + '\n' + _strOutput;
 }
-bool OpenSslExecutable::exec(const QStringList & args) {
+QString OpenSslExecutable::exec(const QStringList & args) {
 	log(tr("Starting openssl ") + args.join(' '));
 	_strOutput.clear();
-	start(path(), args, QIODevice::ReadWrite);
+	if(!QFile::exists(_path)) {
+		return log(tr("There is no file %1").arg(QDir::toNativeSeparators(_path)));
+	}
+	start(_path, args, QIODevice::ReadWrite);
 	const int maxTimeout = 10000 * 1000;
 	if(!waitForStarted(maxTimeout)) {
-		log(tr("Can't start: %1").arg(error()));
-		return false;
+		return log(tr("Can't start: %1").arg(error()));
 	}
 	if(!waitForFinished(maxTimeout)) {
-		log(tr("Failed waitinf to finish: %1").arg(error()));
-		return false;
+		return log(tr("Failed waitinf to finish: %1").arg(error()));
 	}
 	readToMe();
 	if(QProcess::NormalExit != exitStatus()) {
-		log(tr("Exit status = %1").arg(exitStatus()));
-		return false;
+		return log(tr("Exit status = %1").arg(exitStatus()));
 	}
 	log(tr("Finished ok"));
-	return true;
+	return QString();
 }
 void OpenSslExecutable::readToMe() {
 	_strOutput += readAllStandardError();
@@ -85,7 +84,7 @@ bool OpenSslExecutable::generateKeyAndCertificateRequest(const QString & baseNam
 	args.replaceInStrings("$KEY", keyFile);
 	args.replaceInStrings("$CSR", csrFile);
 	args.replaceInStrings("$SUBJ", subj);
-	if(!exec(args) || exitCode() != 0)
+	if(!exec(args).isEmpty() || exitCode() != 0)
 		return false;
 	return existsOrExit(dir, keyFile) && existsOrExit(dir, csrFile);
 }
@@ -102,7 +101,7 @@ bool OpenSslExecutable::generateCertificate(const QString & baseName, const QStr
 	args.replaceInStrings("$CA_DIR", configDir);
 	args.replaceInStrings("$IN", csrFile);
 	args.replaceInStrings("$OUT", crtFile);
-	if(!exec(args) || exitCode() != 0)
+	if(!exec(args).isEmpty() || exitCode() != 0)
 		return false;
 	return existsOrExit(dir, crtFile);
 }
@@ -123,7 +122,7 @@ bool OpenSslExecutable::createCertificatePair(const QString & baseName, const QS
 	args.replaceInStrings("$CRT", crtFile);
 	args.replaceInStrings("$KEY", keyFile);
 	args.replaceInStrings("$P12", p12);
-	if(!exec(args))
+	if(!exec(args).isEmpty())
 		return false;
 	if(exitCode() != 0)
 		return false;
@@ -138,7 +137,7 @@ bool OpenSslExecutable::sha256FromCertificate(const QString & baseName, QString 
 		return false;
 	QStringList args = QString("x509 -noout -in $CRT -fingerprint -sha256").split(' ');
 	args.replaceInStrings("$CRT", crtFile);
-	if(!exec(args))
+	if(!exec(args).isEmpty())
 		return false;
 	if(exitCode() != 0)
 		return false;
@@ -161,9 +160,13 @@ bool OpenSslExecutable::sha256FromCertificate(const QString & baseName, QString 
 	log("_______________________");
 	return true;
 }
-void OpenSslExecutable::log(const QString & s) {
+QString OpenSslExecutable::log(const QString & s) {
 	if(_logger) {
 		_logger->append(s);
 		QCoreApplication::processEvents();
 	}
+	return s;
+}
+void OpenSslExecutable::setLogger(QTextBrowser*l) {
+	_logger = l;
 }
