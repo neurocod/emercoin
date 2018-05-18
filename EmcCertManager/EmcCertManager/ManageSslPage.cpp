@@ -152,7 +152,6 @@ void ManageSslPage::onDelete() {
 	_view->model()->removeRows(rows);
 }
 /*
-удаление сертификата
 добавить хелп/туториал/описание что это такое
 прочитать как загружать в браузер https://cryptor.net/tutorial/sozdaem-ssl-sertifikat-emcssl-dlya-avtorizacii-na-saytah
 забить втуда сертификаты

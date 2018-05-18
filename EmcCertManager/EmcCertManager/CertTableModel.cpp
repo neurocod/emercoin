@@ -8,6 +8,7 @@
 QString CertTableModel::Row::loadFromTemplateFile(const QFileInfo & entry) {//QString::isEmpty -> ok
 	//file example: /CN=Konstantine Kozachuk/emailAddress=neurocod@gmail.com/UID=123
 	_templateFile = entry.filePath();
+	_dir = entry.dir();
 	_baseName = entry.baseName();
 	QFile file(_templateFile);
 	if(!file.open(QFile::ReadOnly))
@@ -89,11 +90,11 @@ QString CertTableModel::Row::generateCert(CertType ctype, QString & sha256)const
 	return QString();
 }
 QString CertTableModel::Row::removeFiles() {
-	QString files[] = { _certFile, _templateFile };
-	for(auto file: files) {
-		if(!file.isEmpty() && QFile::exists(file)) {
-			if(!QFile::remove(file)) {
-				return QObject::tr("Can't remove %1").arg(file);
+	for(auto ext: QString("crt|csr|key|p12|tpl").split('|')) {
+		QString path = _dir.absoluteFilePath(_baseName + "." + ext);
+		if(QFile::exists(path)) {
+			if(!QFile::remove(path)) {
+				return QObject::tr("Can't remove %1").arg(path);
 			}
 		}
 	}

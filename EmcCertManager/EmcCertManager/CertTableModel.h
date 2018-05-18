@@ -19,11 +19,12 @@ class CertTableModel: public QAbstractTableModel {
 		RSA
 	};
 	struct Row {
-		QString _name;//linke nickname
+		QString _name;//like nickname
+		QDir _dir;
 		QString _mail;
 		QString _vcardId;//optional
 		QString _templateFile;//absolute path
-		QString _baseName;//file name without extension
+		QString _baseName;//file name without path and extension
 		QString _certFile;
 		QDateTime _certCreated;
 		QByteArray _templateLine;//it's parsed into name, mail and vcard
