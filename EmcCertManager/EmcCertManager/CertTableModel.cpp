@@ -89,9 +89,16 @@ QString CertTableModel::Row::generateCert(CertType ctype, QString & sha256)const
 	}
 	return QString();
 }
+QString CertTableModel::Row::pathByExt(const QString & extension)const {
+	return _dir.absoluteFilePath(_baseName + '.' + extension);
+}
+void CertTableModel::Row::installIntoSystem()const {
+	QDesktopServices::openUrl(
+		QUrl::fromLocalFile(pathByExt("p12")));
+}
 QString CertTableModel::Row::removeFiles() {
 	for(auto ext: QString("crt|csr|key|p12|tpl").split('|')) {
-		QString path = _dir.absoluteFilePath(_baseName + "." + ext);
+		QString path = pathByExt(ext);
 		if(QFile::exists(path)) {
 			if(!QFile::remove(path)) {
 				return QObject::tr("Can't remove %1").arg(path);

@@ -32,6 +32,8 @@ class CertTableModel: public QAbstractTableModel {
 		QString loadFromTemplateFile(const QFileInfo & entry);//returns error, isEmpty() -> ok
 		QString generateCert(CertType certType, QString & sha256)const;//returns error, isEmpty() -> ok
 		QString removeFiles();//returns error, isEmpty() -> ok
+		void installIntoSystem()const;
+		QString pathByExt(const QString & extension)const;
 	};
 	QList<Row> _rows;
 	

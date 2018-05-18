@@ -169,5 +169,11 @@ void CertTableView::generateCertForSelectedRow() {
 		QMessageBox::critical(this, tr("Error"), msg);
 		return;
 	}
+	if(QMessageBox::question(this, tr("EmerSSL certificate installation"),
+		tr("Do you want to install newly created certificate into system?"))
+		== QMessageBox::Yes)
+	{
+		row.installIntoSystem();
+	}
 	_model->reload();
 }
