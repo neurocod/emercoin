@@ -58,7 +58,7 @@ QString CertTableModel::Row::loadFromTemplateFile(const QFileInfo & entry) {//QS
 	return QString();
 }
 using Shell = ShellImitation;
-QString CertTableModel::Row::generateCert(CertType ctype, QString & sha256)const {//QString::isEmpty -> ok
+QString CertTableModel::Row::generateCert(CertType ctype, const QString & pass, QString & sha256)const {//QString::isEmpty -> ok
 	QString certType;
 	if(ctype == EC) {
 		certType = "EC";
@@ -82,7 +82,7 @@ QString CertTableModel::Row::generateCert(CertType ctype, QString & sha256)const
 	openssl.setLogger(Shell::s_logger);
 	if(!openssl.generateKeyAndCertificateRequest(_baseName, _templateLine)
 		|| !openssl.generateCertificate(_baseName, CA_DIR)
-		|| !openssl.createCertificatePair(_baseName, CA_DIR)
+		|| !openssl.createCertificatePair(_baseName, CA_DIR, pass)
 		|| !openssl.sha256FromCertificate(_baseName, sha256))
 	{
 		return openssl.errorString();
@@ -143,16 +143,6 @@ void CertTableModel::reload() {
 			QMessageBox::critical(0, tr("Can't load template file"), code);
 		}
 	}
-#ifdef _DEBUG
-	//if(!_rows.isEmpty()) {
-	//	QString msg = _rows.first().generateCert(EC);
-	//	if(msg.isEmpty())
-	//		QMessageBox::information(0, tr("OK"), msg);
-	//	else
-	//		QMessageBox::critical(0, tr("Error"), msg);
-	//	QTimer::singleShot(1, qApp, SLOT(quit()));
-	//}
-#endif
 	endResetModel();
 }
 int CertTableModel::rowCount(const QModelIndex& index)const {

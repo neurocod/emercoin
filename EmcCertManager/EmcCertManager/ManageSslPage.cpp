@@ -15,6 +15,8 @@ struct ManageSslPage::Logger: public QTextBrowser{
 ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
 	setWindowTitle(tr("Certificates"));
 	auto lay = new QVBoxLayout(this);
+	//https://cryptor.net/tutorial/sozdaem-ssl-sertifikat-emcssl-dlya-avtorizacii-na-saytah
+	lay->addWidget(new QLabel("EmerSSL allows you to automatically login without passwords on many sites using cerificate, stored in blockchain."));
 	{
 		auto lay2 = new QHBoxLayout;
 		lay->addLayout(lay2);
@@ -151,10 +153,3 @@ void ManageSslPage::onDelete() {
 	auto rows = _view->selectionModel()->selectedRows();
 	_view->model()->removeRows(rows);
 }
-/*
-добавить хелп/туториал/описание что это такое
-прочитать как загружать в браузер https://cryptor.net/tutorial/sozdaem-ssl-sertifikat-emcssl-dlya-avtorizacii-na-saytah
-забить втуда сертификаты
-импортировать их в браузер
-залогинится в браузере
-*/

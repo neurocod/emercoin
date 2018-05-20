@@ -12,20 +12,6 @@ OpenSslExecutable::OpenSslExecutable() {
 #endif
 	_path = QDir(QCoreApplication::applicationDirPath()).absoluteFilePath(_path);
 }
-void OpenSslExecutable::willNeedUserInput(bool b) {
-#ifdef Q_OS_WIN
-	if(!b) {
-		setCreateProcessArgumentsModifier([] (QProcess::CreateProcessArguments *args) {});
-		return;
-	}
-	setCreateProcessArgumentsModifier([] (QProcess::CreateProcessArguments *args) {
-		args->flags |= CREATE_NEW_CONSOLE;
-		args->startupInfo->dwFlags &= ~STARTF_USESTDHANDLES;
-		args->startupInfo->dwFlags |= STARTF_USEFILLATTRIBUTE;
-		args->startupInfo->dwFillAttribute = BACKGROUND_BLUE | FOREGROUND_RED | FOREGROUND_INTENSITY;
-	});
-#endif
-}
 QString OpenSslExecutable::errorString()const {
 	return __super::errorString() + '\n' + _strOutput;
 }
@@ -41,7 +27,7 @@ QString OpenSslExecutable::exec(const QStringList & args) {
 		return log(tr("Can't start: %1").arg(error()));
 	}
 	if(!waitForFinished(maxTimeout)) {
-		return log(tr("Failed waitinf to finish: %1").arg(error()));
+		return log(tr("Failed waiting to finish: %1").arg(error()));
 	}
 	readToMe();
 	if(QProcess::NormalExit != exitStatus()) {
@@ -105,9 +91,8 @@ bool OpenSslExecutable::generateCertificate(const QString & baseName, const QStr
 		return false;
 	return existsOrExit(dir, crtFile);
 }
-bool OpenSslExecutable::createCertificatePair(const QString & baseName, const QString & configDir) {
+bool OpenSslExecutable::createCertificatePair(const QString & baseName, const QString & configDir, const QString & pass) {
 	log(tr("Create certificate pair:"));
-	willNeedUserInput();
 	const QString keyFile = baseName + ".key";
 	const QString crtFile = baseName + ".crt";
 	const QString p12 = baseName + ".p12";
@@ -117,11 +102,24 @@ bool OpenSslExecutable::createCertificatePair(const QString & baseName, const QS
 	if(!existsOrExit(dir, crtFile))
 		return false;
 	dir.remove(p12);
-	QStringList args = QString("pkcs12 -export -in $CRT -inkey $KEY -certfile $CA_DIR/emcssl_ca.crt -out $P12").split(' ');
-	args.replaceInStrings("$CA_DIR", configDir);
-	args.replaceInStrings("$CRT", crtFile);
-	args.replaceInStrings("$KEY", keyFile);
-	args.replaceInStrings("$P12", p12);
+	//OpenSSL password options: https://www.openssl.org/docs/man1.1.0/apps/openssl.html#Pass-Phrase-Options
+	const QString passKeyName = "B20BDB78A28343488AACE4FC75DD47CF";
+	QStringList args = QString("pkcs12 -export -in $CRT -inkey $KEY -certfile $CA_DIR/emcssl_ca.crt -out $P12 -passout env:%1")
+		.arg(passKeyName)
+		.split(' ');
+	for(auto & s : args) {
+		if(s == "$CRT")
+			s = crtFile;
+		else if(s == "$KEY")
+			s = keyFile;
+		else if(s == "$P12")
+			s = p12;
+		else if(s.startsWith("$CA_DIR"))
+			s.replace("$CA_DIR", configDir);
+	}
+	auto env = systemEnvironment();
+	env << passKeyName + "=" + pass;
+	setEnvironment(env);
 	if(!exec(args).isEmpty())
 		return false;
 	if(exitCode() != 0)
@@ -130,7 +128,6 @@ bool OpenSslExecutable::createCertificatePair(const QString & baseName, const QS
 }
 bool OpenSslExecutable::sha256FromCertificate(const QString & baseName, QString & sha256) {
 	log(tr("sha256 from certificate..."));
-	willNeedUserInput(false);
 	const QString crtFile = baseName + ".crt";
 	QDir dir = workingDirectory();
 	if(!existsOrExit(dir, crtFile))

@@ -30,7 +30,7 @@ class CertTableModel: public QAbstractTableModel {
 		QByteArray _templateLine;//it's parsed into name, mail and vcard
 		
 		QString loadFromTemplateFile(const QFileInfo & entry);//returns error, isEmpty() -> ok
-		QString generateCert(CertType certType, QString & sha256)const;//returns error, isEmpty() -> ok
+		QString generateCert(CertType certType, const QString & pass, QString & sha256)const;//returns error, isEmpty() -> ok
 		QString removeFiles();//returns error, isEmpty() -> ok
 		void installIntoSystem()const;
 		QString pathByExt(const QString & extension)const;

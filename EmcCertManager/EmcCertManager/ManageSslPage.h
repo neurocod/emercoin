@@ -5,7 +5,6 @@ class CertTableView;
 class ManageSslPage: public QWidget {
 	public:
 		ManageSslPage(QWidget*parent=0);
-		virtual ~ManageSslPage() {}
 	protected:
 		QAbstractButton* _btnDelete = 0;
 

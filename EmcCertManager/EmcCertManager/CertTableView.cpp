@@ -164,7 +164,7 @@ void CertTableView::generateCertForSelectedRow() {
 		return;
 	auto certType = (CertTableModel::CertType)dlg._certType->currentData().toInt();
 	QString sha256;
-	QString msg = row.generateCert(certType, sha256);//dlg._pass->text()
+	QString msg = row.generateCert(certType, dlg._pass->text(), sha256);
 	if(!msg.isEmpty()) {
 		QMessageBox::critical(this, tr("Error"), msg);
 		return;
