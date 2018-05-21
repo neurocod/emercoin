@@ -37,13 +37,14 @@ struct CertTableView::Dialog: public QDialog {
 	QLineEdit* _pass2 = new QLineEdit;
 	QLabel * _labelError = new QLabel;
 	Dialog(QWidget*parent): QDialog(parent) {
+		setWindowTitle(tr("New certificate"));
 		setWindowFlag(Qt::WindowContextHelpButtonHint, false);
 		auto lay = new QVBoxLayout(this);
 		auto form = new QFormLayout;
 		lay->addLayout(form);
 
 		_certType->addItem("EC", (int)CertTableModel::EC);
-		_certType->addItem("RSA", (int) CertTableModel::RSA);
+		_certType->addItem("RSA", (int)CertTableModel::RSA);
 		form->addRow(tr("Certificate type:"), _certType);
 
 		_pass->setEchoMode(QLineEdit::Password);

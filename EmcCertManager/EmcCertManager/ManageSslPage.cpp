@@ -53,7 +53,7 @@ struct ManageSslPage::TemplateDialog: public QDialog {
 	QLabel* _emailErrorDesc = new QLabel;
 	QPushButton* _okBtn = 0;
 	TemplateDialog(QWidget*parent): QDialog(parent) {
-		setWindowTitle(tr("New certificate"));
+		setWindowTitle(tr("New certificate template"));
 		setWindowFlag(Qt::WindowContextHelpButtonHint, false);
 
 		auto lay = new QVBoxLayout(this);

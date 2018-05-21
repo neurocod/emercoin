@@ -24,7 +24,7 @@ QString CertTableModel::Row::loadFromTemplateFile(const QFileInfo & entry) {//QS
 	bool formatOk = parts.size() == 2 || parts.size() == 3;
 	if(!formatOk)
 		return tr("Invalid format of file %1: %2 parts, looking for 2 or 3").arg(_templateFile).arg(parts.size());
-	for(QString part : parts) {
+	for(QString part: parts) {
 		if(!part.contains('='))
 			return tr("Invalid format: must be key=value in %1").arg(_templateFile);
 		auto kv = part.split('=', QString::SkipEmptyParts);
