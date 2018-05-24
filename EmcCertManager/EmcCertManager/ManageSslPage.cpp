@@ -5,13 +5,9 @@
 #include "CertTableModel.h"
 #include "EmailLineEdit.h"
 #include "CertTableView.h"
+#include "CertLogger.h"
 #include "ShellImitation.h"
 
-struct ManageSslPage::Logger: public QTextBrowser{
-	Logger() {
-		setWindowTitle(tr("Operation result"));
-	}
-};
 ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
 	setWindowTitle(tr("Certificates"));
 	auto lay = new QVBoxLayout(this);
@@ -39,9 +35,14 @@ ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
 	enableDeleteButton();
 	lay->addWidget(_view);
 
-	_logger = new Logger();
+	_logger = new CertLogger();
 	lay->addWidget(_logger);
 	ShellImitation::s_logger = _logger;
+	connect(_view->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ManageSslPage::reloadLog);
+}
+void ManageSslPage::reloadLog() {
+	QString path = _view->selectedLogPath();
+	_logger->setFile(path);
 }
 void ManageSslPage::enableDeleteButton() {
 	_btnDelete->setEnabled(_view->selectionModel()->hasSelection());

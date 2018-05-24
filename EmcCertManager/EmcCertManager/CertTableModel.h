@@ -29,6 +29,7 @@ class CertTableModel: public QAbstractTableModel {
 		QDateTime _certCreated;
 		QByteArray _templateLine;//it's parsed into name, mail and vcard
 		
+		QString logFile()const;
 		QString loadFromTemplateFile(const QFileInfo & entry);//returns error, isEmpty() -> ok
 		QString generateCert(CertType certType, const QString & pass, QString & sha256)const;//returns error, isEmpty() -> ok
 		QString removeFiles();//returns error, isEmpty() -> ok

@@ -5,6 +5,9 @@
 #include "Settings.h"
 #include "OpenSslExecutable.h"
 
+QString CertTableModel::Row::logFile()const {
+	return pathByExt("log");
+}
 QString CertTableModel::Row::loadFromTemplateFile(const QFileInfo & entry) {//QString::isEmpty -> ok
 	//file example: /CN=Konstantine Kozachuk/emailAddress=neurocod@gmail.com/UID=123
 	_templateFile = entry.filePath();
@@ -72,6 +75,10 @@ QString CertTableModel::Row::generateCert(CertType ctype, const QString & pass, 
 	const QDir cur = Settings::certDir();
 	QDir db = cur.absoluteFilePath("db");
 	QString err;
+	if(Shell::s_logger) {
+		Shell::s_logger->clear();
+		Shell::s_logger->append(QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss"));
+	}
 	if(!Shell::removeRecursiveFilesOnly(db, err)
 	|| !Shell::mkpath(cur, "db/certs", err)
 	|| !Shell::mkpath(cur, "db/newcerts", err)
@@ -87,6 +94,12 @@ QString CertTableModel::Row::generateCert(CertType ctype, const QString & pass, 
 	{
 		return openssl.errorString();
 	}
+
+	openssl.log("_______________________");
+	openssl.log(QObject::tr("Please, deposit into EmerCoin NVS pair:\n"
+		"key: ssl:%1\n"
+		"value: sha256=%2").arg(_baseName).arg(sha256));
+	openssl.log("_______________________");
 	return QString();
 }
 QString CertTableModel::Row::pathByExt(const QString & extension)const {
@@ -97,7 +110,7 @@ void CertTableModel::Row::installIntoSystem()const {
 		QUrl::fromLocalFile(pathByExt("p12")));
 }
 QString CertTableModel::Row::removeFiles() {
-	for(auto ext: QString("crt|csr|key|p12|tpl").split('|')) {
+	for(auto ext: QString("crt|csr|key|p12|tpl|log").split('|')) {
 		QString path = pathByExt(ext);
 		if(QFile::exists(path)) {
 			if(!QFile::remove(path)) {

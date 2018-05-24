@@ -2,18 +2,27 @@
 #include "pch.h"
 #include "OpenSslExecutable.h"
 #include "Settings.h"
+#include "CertLogger.h"
 
 OpenSslExecutable::OpenSslExecutable() {
 	setWorkingDirectory(Settings::certDir().absolutePath());
+	_path = path();
+}
+QString OpenSslExecutable::path() {
+	QString p;
 #ifdef Q_OS_WIN
-	_path = "openssl.exe";
+	p = "openssl.exe";
 #else
-	_path = "openssl";
+	p = "openssl";
 #endif
-	_path = QDir(QCoreApplication::applicationDirPath()).absoluteFilePath(_path);
+	p = QDir(QCoreApplication::applicationDirPath()).absoluteFilePath(p);
+	return p;
+}
+bool OpenSslExecutable::found() {
+	return QFile::exists(path());
 }
 QString OpenSslExecutable::errorString()const {
-	return __super::errorString() + '\n' + _strOutput;
+	return QProcess::errorString() + '\n' + _strOutput;
 }
 QString OpenSslExecutable::exec(const QStringList & args) {
 	log(tr("Starting openssl ") + args.join(' '));
@@ -149,21 +158,14 @@ bool OpenSslExecutable::sha256FromCertificate(const QString & baseName, QString 
 	sha256.remove(':');
 	sha256.remove(0, prefix.count());
 	sha256 = sha256.toLower();
-
-	log("_______________________");
-	log(tr("Please, deposit into EmerCoin NVS pair:"));
-	log(tr("key: ") + "ssl:" + baseName);
-	log(tr("value: ") + "sha256=" + sha256);
-	log("_______________________");
 	return true;
 }
 QString OpenSslExecutable::log(const QString & s) {
 	if(_logger) {
 		_logger->append(s);
-		QCoreApplication::processEvents();
 	}
 	return s;
 }
-void OpenSslExecutable::setLogger(QTextBrowser*l) {
+void OpenSslExecutable::setLogger(CertLogger*l) {
 	_logger = l;
 }

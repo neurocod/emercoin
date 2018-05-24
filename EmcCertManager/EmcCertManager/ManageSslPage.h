@@ -1,6 +1,7 @@
 ﻿//ManageSslPage.h by Konstantine Kozachuck as neurocod
 #pragma once
 class CertTableView;
+class CertLogger;
 
 class ManageSslPage: public QWidget {
 	public:
@@ -11,9 +12,9 @@ class ManageSslPage: public QWidget {
 		void onDelete();
 		void onCreate();
 		void enableDeleteButton();
+		void reloadLog();
 
 		CertTableView* _view = 0;
 		struct TemplateDialog;
-		struct Logger;
-		Logger* _logger = 0;
+		CertLogger* _logger = 0;
 };

@@ -154,18 +154,32 @@ void CertTableView::generateCertByButton() {
 	selectRow(nRow);
 	generateCertForSelectedRow();
 }
-void CertTableView::generateCertForSelectedRow() {
+int CertTableView::selectedRow()const {
 	auto rows = selectionModel()->selectedRows();
-	if(rows.isEmpty())
+	if(!rows.isEmpty())
+		return rows[0].row();
+	return -1;
+}
+QString CertTableView::selectedLogPath() {
+	int nRow = selectedRow();
+	if(-1 == nRow)
+		return QString();
+	const auto & row = _model->_rows[nRow];
+	return row.logFile();
+}
+void CertTableView::generateCertForSelectedRow() {
+	int nRow = selectedRow();
+	if(-1==nRow || !isEnabled())
 		return;
-	int nRow = rows[0].row();
 	const auto & row = _model->_rows[nRow];
 	Dialog dlg(this);
 	if(dlg.exec()!=QDialog::Accepted)
 		return;
+	setEnabled(false);//prevent selection change to prevent selected log file change
 	auto certType = (CertTableModel::CertType)dlg._certType->currentData().toInt();
 	QString sha256;
 	QString msg = row.generateCert(certType, dlg._pass->text(), sha256);
+	setEnabled(true);
 	if(!msg.isEmpty()) {
 		QMessageBox::critical(this, tr("Error"), msg);
 		return;

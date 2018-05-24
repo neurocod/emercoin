@@ -190,6 +190,7 @@
     </ClCompile>
     <ClCompile Include="Settings.cpp" />
     <ClCompile Include="ShellImitation.cpp" />
+    <ClCompile Include="CertLogger.cpp" />
     <ClCompile Include="TableView.cpp" />
     <ClCompile Include="ValidatorToLabel.cpp" />
   </ItemGroup>
@@ -201,6 +202,7 @@
     <ClInclude Include="IPv6LineEdit.h" />
     <ClInclude Include="OpenSslExecutable.h" />
     <ClInclude Include="ShellImitation.h" />
+    <ClInclude Include="CertLogger.h" />
     <ClInclude Include="TableView.h" />
     <ClInclude Include="ValidatorToLabel.h" />
     <CustomBuild Include="EmailValidator.h">

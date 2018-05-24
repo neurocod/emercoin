@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
 	struct File: public QFile {
 		File(QString path): QFile(path) {}
 		void write(QString str) {
-			__super::write(str.toLatin1());
+			QFile::write(str.toLatin1());
 		}
 	};
 	File f(path);

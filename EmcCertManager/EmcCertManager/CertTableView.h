@@ -9,6 +9,8 @@ class CertTableView: public TableView {
 		using Model = CertTableModel;
 		Model* model()const;
 		void generateCertForSelectedRow();
+		int selectedRow()const;
+		QString selectedLogPath();
 	protected:
 		CertTableModel* _model = 0;
 		struct Dialog;

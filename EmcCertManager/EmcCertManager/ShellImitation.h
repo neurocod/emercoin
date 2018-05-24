@@ -1,8 +1,9 @@
 ﻿//ShellImitation.h by Emercoin developers - 2018.03.04 17:17:09
 #pragma once
+#include "CertLogger.h"
 
 struct ShellImitation {
-	static QPointer<QTextBrowser> s_logger;
+	static QPointer<CertLogger> s_logger;
 	static void maybeLog(const QString & s);
 
 	static bool touch(const QDir & dir, const QString & fileName, QString & err);

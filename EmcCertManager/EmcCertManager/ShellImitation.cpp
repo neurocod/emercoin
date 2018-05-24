@@ -1,12 +1,12 @@
 ﻿//ShellImitation.cpp by Emercoin developers - 2018.03.04 17:17:09
 #include "pch.h"
 #include "ShellImitation.h"
+#include "CertLogger.h"
 
-QPointer<QTextBrowser> ShellImitation::s_logger;
+QPointer<CertLogger> ShellImitation::s_logger;
 void ShellImitation::maybeLog(const QString & s) {
 	if(s_logger && QThread::currentThread()==qApp->thread()) {
 		s_logger->append(s);
-		QCoreApplication::processEvents();
 	}
 }
 QString ShellImitation::tr(const char*c) {
