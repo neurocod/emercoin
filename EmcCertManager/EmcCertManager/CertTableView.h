@@ -19,4 +19,5 @@ class CertTableView: public TableView {
 		void showInExplorer();
 		static void showInGraphicalShell(QWidget *parent, const QString &pathIn);
 		int rowFromAction(QAction*a);
+		void installSelectedIntoSystem();
 };

@@ -11,6 +11,7 @@ CertTableView::CertTableView() {
 	setSelectionMode(QAbstractItemView::SingleSelection);
 	recreateButtons();
 	connect(_model, &Model::modelReset, this, &CertTableView::recreateButtons);
+	connect(this, &CertTableView::doubleClicked, this, &CertTableView::installSelectedIntoSystem);
 }
 CertTableView::Model* CertTableView::model()const {
 	return _model;
@@ -21,6 +22,7 @@ void CertTableView::recreateButtons() {
 		setIndexWidget(_model->index(row, Model::ColMenu), w);
 		
 		auto gen = new QAction(tr("Generate again"), w);
+		gen->setToolTip(tr("Generate again\nRegenerate certificate (for same nickname and email) if it has been expired or has been compromised"));
 		gen->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/refresh-24.png"));
 		connect(gen, &QAction::triggered, this, &CertTableView::generateCertByButton);
 		w->addAction(gen);
@@ -101,7 +103,7 @@ void CertTableView::showInGraphicalShell(QWidget *parent, const QString &pathIn)
 #endif
 #if defined(Q_OS_MAC)
 	Q_UNUSED(parent)
-		QStringList scriptArgs;
+	QStringList scriptArgs;
 	scriptArgs << QLatin1String("-e")
 		<< QString::fromLatin1("tell application \"Finder\" to reveal POSIX file \"%1\"")
 		.arg(pathIn);
@@ -112,7 +114,7 @@ void CertTableView::showInGraphicalShell(QWidget *parent, const QString &pathIn)
 	QProcess::execute("/usr/bin/osascript", scriptArgs);
 	return;
 #endif
-	// we cannot select a file here, because no file browser really supports it
+	// we can't select a file here, because no file browser really supports it
 	const QFileInfo fileInfo(pathIn);
 	QString dir = fileInfo.isDir() ? fileInfo.absolutePath() : fileInfo.dir().absolutePath();
 	QDesktopServices::openUrl(QUrl::fromLocalFile(dir));
@@ -140,7 +142,10 @@ void CertTableView::showInExplorer() {
 	if(nRow<0 || nRow >= _model->rowCount())
 		return;
 	const auto & row = _model->_rows[nRow];
-	showInGraphicalShell(this, row._templateFile);
+	QString path = row._certFile;
+	if(path.isEmpty() || !QFile::exists(path))
+		path = row._templateFile;
+	showInGraphicalShell(this, path);
 }
 void CertTableView::generateCertByButton() {
 	auto b = qobject_cast<QAction*>(sender());
@@ -191,4 +196,11 @@ void CertTableView::generateCertForSelectedRow() {
 		row.installIntoSystem();
 	}
 	_model->reload();
+}
+void CertTableView::installSelectedIntoSystem() {
+	int nRow = selectedRow();
+	if(-1 == nRow)
+		return;
+	const auto & row = _model->_rows[nRow];
+	row.installIntoSystem();
 }

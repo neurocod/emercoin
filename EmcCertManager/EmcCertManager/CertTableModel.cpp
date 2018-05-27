@@ -51,8 +51,7 @@ QString CertTableModel::Row::loadFromTemplateFile(const QFileInfo & entry) {//QS
 		return tr("Invalid format: empty name in %1").arg(_templateFile);;
 	if(_mail.isEmpty())
 		return tr("Invalid format: empty email in %1").arg(_templateFile);;
-	QString certPath = _templateFile;
-	certPath.replace(".tpl", ".crt");
+	const QString certPath = pathByExt("p12");
 	QFileInfo cert(certPath);
 	if(cert.exists()) {
 		_certFile = certPath;
@@ -106,8 +105,9 @@ QString CertTableModel::Row::pathByExt(const QString & extension)const {
 	return _dir.absoluteFilePath(_baseName + '.' + extension);
 }
 void CertTableModel::Row::installIntoSystem()const {
-	QDesktopServices::openUrl(
-		QUrl::fromLocalFile(pathByExt("p12")));
+	if(!_certFile.isEmpty() && QFile::exists(_certFile)) {
+		QDesktopServices::openUrl(QUrl::fromLocalFile(_certFile));
+	}
 }
 QString CertTableModel::Row::removeFiles() {
 	for(auto ext: QString("crt|csr|key|p12|tpl|log").split('|')) {
@@ -195,7 +195,7 @@ QVariant CertTableModel::data(const QModelIndex &index, int role) const {
 			case ColName: return item._name;
 			case ColMail: return item._mail;
 			case ColVcardId: return item._vcardId;
-			case ColCertFile: return item._certFile;
+			case ColCertFile: return item._baseName + ".p12";
 			case ColMenu: return QVariant();
 			case ColCertCreated: return item._certCreated.toString("yyyy.MM.dd HH:mm:ss");
 			//case ColTemplateFile: return item._templateFile;

@@ -12,7 +12,9 @@ ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
 	setWindowTitle(tr("Certificates"));
 	auto lay = new QVBoxLayout(this);
 	//https://cryptor.net/tutorial/sozdaem-ssl-sertifikat-emcssl-dlya-avtorizacii-na-saytah
-	lay->addWidget(new QLabel("EmerSSL allows you to automatically login without passwords on many sites using cerificate, stored in blockchain."));
+	lay->addWidget(new QLabel(
+		"EmerSSL allows you to automatically login without passwords on many sites using cerificate, stored in blockchain."
+	));
 	{
 		auto lay2 = new QHBoxLayout;
 		lay->addLayout(lay2);
@@ -30,13 +32,16 @@ ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
 		lay2->addStretch();
 	}
 
+	auto splitter = new QSplitter(Qt::Vertical);
+	lay->addWidget(splitter);
+
 	_view = new CertTableView;
 	connect(_view->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ManageSslPage::enableDeleteButton);
 	enableDeleteButton();
-	lay->addWidget(_view);
+	splitter->addWidget(_view);
 
 	_logger = new CertLogger();
-	lay->addWidget(_logger);
+	splitter->addWidget(_logger);
 	ShellImitation::s_logger = _logger;
 	connect(_view->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ManageSslPage::reloadLog);
 }
