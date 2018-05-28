@@ -40,7 +40,7 @@ QString CertTableModel::Row::loadFromTemplateFile(const QFileInfo & entry) {//QS
 		} else if(key == "emailAddress") {
 			_mail = value;
 		} else if(key == "UID") {
-			_vcardId = value;
+			_InfoCardId = value;
 		} else {
 			return tr("Unknown key %1 in %2").arg(key).arg(_templateFile);
 		}
@@ -174,7 +174,7 @@ QVariant CertTableModel::headerData(int section, Qt::Orientation orientation, in
 			switch(section) {
 				case ColName: return tr("Name");
 				case ColMail: return tr("email");
-				case ColVcardId: return tr("vCard id");
+				case ColInfoCardId: return tr("InfoCard id");
 				case ColMenu: return tr("Menu");
 				case ColCertFile: return tr("certificate file");
 				case ColCertCreated: return tr("Cert updated");
@@ -194,7 +194,7 @@ QVariant CertTableModel::data(const QModelIndex &index, int role) const {
 		switch(index.column()) {
 			case ColName: return item._name;
 			case ColMail: return item._mail;
-			case ColVcardId: return item._vcardId;
+			case ColInfoCardId: return item._InfoCardId;
 			case ColCertFile: return item._baseName + ".p12";
 			case ColMenu: return QVariant();
 			case ColCertCreated: return item._certCreated.toString("yyyy.MM.dd HH:mm:ss");

@@ -15,6 +15,7 @@ ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
 	lay->addWidget(new QLabel(
 		"EmerSSL allows you to automatically login without passwords on many sites using cerificate, stored in blockchain."
 	));
+	_view = new CertTableView;
 	{
 		auto lay2 = new QHBoxLayout;
 		lay->addLayout(lay2);
@@ -29,15 +30,26 @@ ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
 		connect(_btnDelete, &QAbstractButton::clicked, this, &ManageSslPage::onDelete);
 		lay2->addWidget(_btnDelete);
 
+		_btnGenerate = new QPushButton(tr("Generate again"));
+		_btnGenerate->setToolTip(tr("Regenerate certificate (for same nickname and email) if it has been expired or has been compromised"));
+		_btnGenerate->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/refresh-24.png"));
+		connect(_btnGenerate, &QAbstractButton::clicked, this, &ManageSslPage::onCreate);
+		lay2->addWidget(_btnGenerate);
+
+		_btnOpenFolder = new QPushButton(tr("Open folder"));
+		_btnOpenFolder->setToolTip(tr("Reveal certificate file in folder"));
+		_btnOpenFolder->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/standardbutton-open-32.png"));
+		connect(_btnOpenFolder, &QAbstractButton::clicked, this, &ManageSslPage::onDelete);
+		lay2->addWidget(_btnOpenFolder);
+
 		lay2->addStretch();
 	}
 
 	auto splitter = new QSplitter(Qt::Vertical);
 	lay->addWidget(splitter);
 
-	_view = new CertTableView;
-	connect(_view->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ManageSslPage::enableDeleteButton);
-	enableDeleteButton();
+	connect(_view->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ManageSslPage::enableButtons);
+	enableButtons();
 	splitter->addWidget(_view);
 
 	_logger = new CertLogger();
@@ -49,8 +61,11 @@ void ManageSslPage::reloadLog() {
 	QString path = _view->selectedLogPath();
 	_logger->setFile(path);
 }
-void ManageSslPage::enableDeleteButton() {
-	_btnDelete->setEnabled(_view->selectionModel()->hasSelection());
+void ManageSslPage::enableButtons() {
+	bool selected = _view->selectionModel()->hasSelection();
+	_btnDelete->setEnabled(selected);
+	_btnGenerate->setEnabled(selected);
+	_btnOpenFolder->setEnabled(selected);
 }
 struct ManageSslPage::TemplateDialog: public QDialog {
 	QLineEdit* _name = new QLineEdit;
@@ -77,7 +92,7 @@ struct ManageSslPage::TemplateDialog: public QDialog {
 			_emailErrorDesc->hide();
 			form->addRow(tr("E-mail:"), lay);
 		}
-		form->addRow(tr("Your UID for retrieve vCard info:"), _ecard);
+		form->addRow(tr("Your UID to retrieve InfoCard info:"), _ecard);
 		_ecard->setPlaceholderText(tr("Optional field"));
 
 		auto box = new QDialogButtonBox;
@@ -109,6 +124,15 @@ struct ManageSslPage::TemplateDialog: public QDialog {
 			QDialog::accept();
 	}
 };
+QString ManageSslPage::randName() {
+	//rand key chosed to be 64-bit so EmerSSL can optimize hashes processing etc;
+	//also in plain C 64bit integers are much easier to manipulate than strings, son int64 are used;
+	//we can't use std::random_device because it's deterministic on MinGW https://sourceforge.net/p/mingw-w64/bugs/338/
+	QByteArray uid = QUuid::createUuid().toByteArray();
+	uid = QCryptographicHash::hash(uid, QCryptographicHash::Sha256);
+	uid.truncate(8);
+	return uid.toHex();
+}
 void ManageSslPage::onCreate() {
 	TemplateDialog dlg(this);
 	if(dlg.exec()!=QDialog::Accepted)
@@ -128,11 +152,7 @@ void ManageSslPage::onCreate() {
 		else
 			c = '.';
 	}
-	QString fileName = QUuid::createUuid().toString();
-	fileName.remove('{');
-	fileName.remove('-');
-	fileName.remove('}');
-	fileName += ".tpl";
+	QString fileName = randName() + ".tpl";
 	QDir dir = Settings::certDir();
 	QString path = dir.absoluteFilePath(fileName);
 	{

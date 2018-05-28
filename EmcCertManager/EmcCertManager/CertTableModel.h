@@ -6,7 +6,7 @@ class CertTableModel: public QAbstractTableModel {
 	enum Columns {
 		ColName,
 		ColMail,
-		ColVcardId,
+		ColInfoCardId,
 		ColCertFile,
 		ColMenu,
 		ColCertCreated,
@@ -22,12 +22,12 @@ class CertTableModel: public QAbstractTableModel {
 		QString _name;//like nickname
 		QDir _dir;
 		QString _mail;
-		QString _vcardId;//optional
+		QString _InfoCardId;//optional
 		QString _templateFile;//absolute path
 		QString _baseName;//file name without path and extension
 		QString _certFile;
 		QDateTime _certCreated;
-		QByteArray _templateLine;//it's parsed into name, mail and vcard
+		QByteArray _templateLine;//it's parsed into name, mail and InfoCard
 		
 		QString logFile()const;
 		QString loadFromTemplateFile(const QFileInfo & entry);//returns error, isEmpty() -> ok

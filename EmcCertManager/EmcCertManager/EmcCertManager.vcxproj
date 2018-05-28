@@ -181,6 +181,7 @@
     <ClCompile Include="IPv6LineEdit.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="OpenSslConfigWriter.cpp" />
     <ClCompile Include="OpenSslExecutable.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -200,6 +201,7 @@
     <ClInclude Include="CertTableView.h" />
     <ClInclude Include="EmailLineEdit.h" />
     <ClInclude Include="IPv6LineEdit.h" />
+    <ClInclude Include="OpenSslConfigWriter.h" />
     <ClInclude Include="OpenSslExecutable.h" />
     <ClInclude Include="ShellImitation.h" />
     <ClInclude Include="CertLogger.h" />

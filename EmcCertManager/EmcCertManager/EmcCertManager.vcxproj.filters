@@ -92,6 +92,9 @@
     <ClCompile Include="CertLogger.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="OpenSslConfigWriter.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_mainwindow.h">
@@ -134,6 +137,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="CertLogger.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenSslConfigWriter.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
