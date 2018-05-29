@@ -3,9 +3,7 @@
 
 class OpenSslConfigWriter {
 	public:
-		static QString writeCA_EC();
-		static QString writeCA_RSA();
-		static QString writeCA_WINCONF();
+		static QString checkAndWrite();
 	protected:
-		static QString writeIfAbsent(const QString & subPath, const QString & contents);
+		static bool writeIfAbsent(const QString & subPath, const char* strContents, QString & error);
 };

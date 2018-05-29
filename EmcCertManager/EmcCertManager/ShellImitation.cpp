@@ -43,7 +43,16 @@ bool ShellImitation::mkpath(const QDir & dir, const QString & path, QString & er
 	return false;
 }
 bool ShellImitation::write(const QString & path, const QByteArray & what, QString &err) {
-	maybeLog(tr("Writing %1...").arg(path));
+	maybeLog(tr("Writing %1").arg(path));
+	QDir dir = QFileInfo(path).dir();
+	if(!dir.exists()) {
+		maybeLog(tr("Creating directory %1").arg(dir.absolutePath()));
+		if(!dir.mkpath(".")) {
+			err = tr("Can't create %1").arg(dir.absolutePath());
+			maybeLog(err);
+			return false;
+		}
+	}
 	QFile file(path);
 	if(!file.open(QFile::WriteOnly | QFile::Truncate)) {
 		err = tr("Can't open file %1: %2").arg(path).arg(file.errorString());

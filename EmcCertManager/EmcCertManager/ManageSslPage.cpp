@@ -7,6 +7,7 @@
 #include "CertTableView.h"
 #include "CertLogger.h"
 #include "ShellImitation.h"
+#include "OpenSslConfigWriter.h"
 
 ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
 	setWindowTitle(tr("Certificates"));
@@ -56,6 +57,8 @@ ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
 	splitter->addWidget(_logger);
 	ShellImitation::s_logger = _logger;
 	connect(_view->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ManageSslPage::reloadLog);
+
+	OpenSslConfigWriter::checkAndWrite();
 }
 void ManageSslPage::reloadLog() {
 	QString path = _view->selectedLogPath();
