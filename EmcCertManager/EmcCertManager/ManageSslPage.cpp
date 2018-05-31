@@ -10,7 +10,7 @@
 #include "OpenSslConfigWriter.h"
 
 ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
-	setWindowTitle(tr("Certificates"));
+	setWindowTitle(tr("EmerSSL certificates"));
 	auto lay = new QVBoxLayout(this);
 	//https://cryptor.net/tutorial/sozdaem-ssl-sertifikat-emcssl-dlya-avtorizacii-na-saytah
 	lay->addWidget(new QLabel(
@@ -158,17 +158,9 @@ void ManageSslPage::onCreate() {
 	QString fileName = randName() + ".tpl";
 	QDir dir = Settings::certDir();
 	QString path = dir.absoluteFilePath(fileName);
-	{
-		QFile file(path);
-		if(!file.open(QFile::WriteOnly)) {
-			QMessageBox::critical(this, tr("Can't write file %1").arg(path), file.errorString());
-			return;
-		}
-		auto arr = contents.toUtf8();
-		auto written = file.write(arr);
-		if(written!=arr.size())
-			QMessageBox::critical(this, tr("Can't write file %1").arg(path), file.errorString());
-	}
+	QString error;
+	if(!ShellImitation::write(path, contents.toUtf8(), error))
+		return;
 	_view->model()->reload();
 	int index = _view->model()->indexByFile(path);
 	Q_ASSERT(index!=-1);

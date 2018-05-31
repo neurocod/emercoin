@@ -19,7 +19,8 @@ QString OpenSslExecutable::path() {
 	return p;
 }
 bool OpenSslExecutable::found() {
-	return QFile::exists(path());
+	QFileInfo file(path());
+	return file.exists() && file.isExecutable();
 }
 QString OpenSslExecutable::errorString()const {
 	return QProcess::errorString() + '\n' + _strOutput;
