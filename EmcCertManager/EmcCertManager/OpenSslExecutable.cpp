@@ -22,6 +22,20 @@ bool OpenSslExecutable::found() {
 	QFileInfo file(path());
 	return file.exists() && file.isExecutable();
 }
+bool OpenSslExecutable::isFoundOrMessageBox() {
+	if(found())
+		return true;
+	QMessageBox box(QMessageBox::Critical,
+		qApp->applicationDisplayName(),
+		tr("There is no OpenSSL executable in folder %1,<br/>\n"
+			"certificate creation will not work.<br/>\n"
+			"Please download OpenSSL from <a href=\"https://www.openssl.org/\">www.openssl.org</a> and place it there.")
+		.arg(path()));
+	box.setTextInteractionFlags(Qt::TextBrowserInteraction);
+	box.setTextFormat(Qt::RichText);
+	box.exec();
+	return false;
+}
 QString OpenSslExecutable::errorString()const {
 	return QProcess::errorString() + '\n' + _strOutput;
 }

@@ -8,6 +8,7 @@
 #include "CertLogger.h"
 #include "ShellImitation.h"
 #include "OpenSslConfigWriter.h"
+#include "OpenSslExecutable.h"
 
 ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
 	setWindowTitle(tr("EmerSSL certificates"));
@@ -59,6 +60,7 @@ ManageSslPage::ManageSslPage(QWidget*parent): QWidget(parent) {
 	connect(_view->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ManageSslPage::reloadLog);
 
 	OpenSslConfigWriter::checkAndWrite();
+	QTimer::singleShot(1, &OpenSslExecutable::isFoundOrMessageBox);
 }
 void ManageSslPage::reloadLog() {
 	QString path = _view->selectedLogPath();

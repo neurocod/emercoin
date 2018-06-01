@@ -14,6 +14,7 @@ class OpenSslExecutable: public QProcess {
 		void setLogger(CertLogger*l);
 		QString log(const QString & s);
 		static bool found();
+		static bool isFoundOrMessageBox();
 	protected:
 		QString _path;
 		QString _strOutput;
