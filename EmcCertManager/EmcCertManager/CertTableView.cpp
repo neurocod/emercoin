@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "CertTableView.h"
 #include "CertTableModel.h"
+#include "ShellImitation.h"
 
 CertTableView::CertTableView() {
 	horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -186,7 +187,7 @@ void CertTableView::generateCertForSelectedRow() {
 	QString msg = row.generateCert(certType, dlg._pass->text(), sha256);
 	setEnabled(true);
 	if(!msg.isEmpty()) {
-		QMessageBox::critical(this, tr("Error"), msg);
+		ShellImitation::maybeLog(msg);
 		return;
 	}
 	if(QMessageBox::question(this, tr("EmerSSL certificate installation"),

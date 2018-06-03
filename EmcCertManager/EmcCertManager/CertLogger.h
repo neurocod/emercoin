@@ -8,4 +8,6 @@ class CertLogger: public QTextBrowser {
 		void clear();
 	protected:
 		QFile _file;
+
+		void closeEvent(QCloseEvent *event);
 };

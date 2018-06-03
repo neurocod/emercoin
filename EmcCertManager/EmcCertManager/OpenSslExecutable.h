@@ -13,15 +13,15 @@ class OpenSslExecutable: public QProcess {
 		bool sha256FromCertificate(const QString & baseName, QString & sha256);
 		void setLogger(CertLogger*l);
 		QString log(const QString & s);
-		static bool found();
 		static bool isFoundOrMessageBox();
 	protected:
-		QString _path;
+		static QString s_path;
 		QString _strOutput;
 		CertLogger* _logger = 0;
 		bool existsOrExit(const QDir & dir, const QString & file);
 		bool deleteOrExit(QDir & dir, const QString & file, int tries=5);
 		void readToMe();
-		static QString path();
+		static QString defaultPath();
+		static bool seemsOk(const QString & path);
 		struct SpecifyPathDialog;
 };

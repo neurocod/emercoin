@@ -4,11 +4,13 @@
 #include "Settings.h"
 #include "CertLogger.h"
 
+QString OpenSslExecutable::s_path;
 OpenSslExecutable::OpenSslExecutable() {
 	setWorkingDirectory(Settings::certDir().absolutePath());
-	_path = path();
+	if(s_path.isEmpty())
+		s_path = defaultPath();
 }
-QString OpenSslExecutable::path() {
+QString OpenSslExecutable::defaultPath() {
 	QString p;
 #ifdef Q_OS_WIN
 	p = "openssl.exe";
@@ -18,27 +20,47 @@ QString OpenSslExecutable::path() {
 	p = QDir(QCoreApplication::applicationDirPath()).absoluteFilePath(p);
 	return p;
 }
-bool OpenSslExecutable::found() {
-	QFileInfo file(path());
+bool OpenSslExecutable::seemsOk(const QString & path) {
+	if(!path.contains("openssl", Qt::CaseInsensitive))
+		return false;
+	QFileInfo file(path);
 	return file.exists() && file.isExecutable();
 }
 struct OpenSslExecutable::SpecifyPathDialog: public QDialog {
 	QLineEdit* _path = 0;
+	QLabel* _statusLabel = 0;
+	QPixmap _pixOk;
+	QPixmap _pixFailed;
+	QTimer _timerCheck;//user can download exe so check it periodically
 	SpecifyPathDialog() {
+		_pixOk = QPixmap(":/qt-project.org/styles/commonstyle/images/standardbutton-apply-32.png");
+		_pixFailed = QPixmap(":/qt-project.org/styles/commonstyle/images/stop-24.png");
 		auto lay = new QFormLayout(this);
 		
 		auto label = new QLabel(
 				tr("No OpenSSL executable found, certificate creation will not work.<br/>\n"
-				"Please download OpenSSL from <a href=\"https://www.openssl.org/\">www.openssl.org</a> and place it in folder specified above.")
+				"Please download OpenSSL from <a href=\"https://wiki.openssl.org/index.php/Binaries\">www.openssl.org</a> and place it in folder specified above.")
 			.arg(qApp->applicationDirPath()));
+		label->setOpenExternalLinks(true);
 		lay->addRow(label);
 
 		{
 			auto lay2 = new QHBoxLayout;
 			
 			_path = new QLineEdit;
-			_path->setText(path());
+			QCompleter *completer = new QCompleter(this);
+			auto fileSystem = new QDirModel(completer);
+			fileSystem->setFilter(QDir::AllEntries|QDir::NoDotAndDotDot);
+			completer->setModel(fileSystem);
+			_path->setCompleter(completer);
+			connect(_path, &QLineEdit::textChanged, this, &SpecifyPathDialog::onPathChanged);
+			connect(&_timerCheck, &QTimer::timeout, this, &SpecifyPathDialog::onPathChanged);
+			_timerCheck.setInterval(1000);
+			_timerCheck.start();
 			lay2->addWidget(_path);
+
+			_statusLabel = new QLabel;
+			lay2->addWidget(_statusLabel);
 
 			auto browse = new QPushButton(tr("Browse"));
 			browse->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/standardbutton-open-32.png"));
@@ -46,6 +68,8 @@ struct OpenSslExecutable::SpecifyPathDialog: public QDialog {
 			connect(browse, &QAbstractButton::clicked, this, &SpecifyPathDialog::onBrowse);
 			
 			lay->addRow(tr("OpenSSL executable:"), lay2);
+
+			_path->setText(s_path);
 		}
 		{
 			auto box = new QDialogButtonBox;
@@ -66,14 +90,36 @@ struct OpenSslExecutable::SpecifyPathDialog: public QDialog {
 			);
 		if(!s.isEmpty())
 			_path->setText(s);
+		if(seemsOk(s))
+			s_path = s;
+	}
+	void onPathChanged() {
+		QString p = _path->text();
+		bool ok = seemsOk(p);
+		_statusLabel->setPixmap(ok ? _pixOk : _pixFailed);
+		QString toolTip;
+		if(ok) {
+			toolTip = tr("Found!");
+		} else {
+			toolTip = tr("File not found");
+			if(!p.contains("openssl", Qt::CaseInsensitive))
+				toolTip = tr("Not openssl file");
+			else if(!QFile::exists(p))
+				;//use prev set value
+			else if(!QFileInfo(p).isExecutable())
+				toolTip = tr("File is not executable");
+		}
+		_statusLabel->setToolTip(toolTip);
 	}
 };
 bool OpenSslExecutable::isFoundOrMessageBox() {
-	if(found())
+	if(s_path.isEmpty())
+		s_path = defaultPath();
+	if(seemsOk(s_path))
 		return true;
 	SpecifyPathDialog dlg;
 	dlg.exec();
-	return false;
+	return seemsOk(s_path);
 }
 QString OpenSslExecutable::errorString()const {
 	return QProcess::errorString() + '\n' + _strOutput;
@@ -81,10 +127,10 @@ QString OpenSslExecutable::errorString()const {
 QString OpenSslExecutable::exec(const QStringList & args) {
 	log(tr("Starting openssl ") + args.join(' '));
 	_strOutput.clear();
-	if(!QFile::exists(_path)) {
-		return log(tr("There is no file %1").arg(QDir::toNativeSeparators(_path)));
+	if(!QFile::exists(s_path)) {
+		return log(tr("There is no file %1").arg(QDir::toNativeSeparators(s_path)));
 	}
-	start(_path, args, QIODevice::ReadWrite);
+	start(s_path, args, QIODevice::ReadWrite);
 	const int maxTimeout = 10000 * 1000;
 	if(!waitForStarted(maxTimeout)) {
 		return log(tr("Can't start: %1").arg(error()));
@@ -96,7 +142,7 @@ QString OpenSslExecutable::exec(const QStringList & args) {
 	if(QProcess::NormalExit != exitStatus()) {
 		return log(tr("Exit status = %1").arg(exitStatus()));
 	}
-	log(tr("Finished ok"));
+	log(tr("Finished"));
 	return QString();
 }
 void OpenSslExecutable::readToMe() {
