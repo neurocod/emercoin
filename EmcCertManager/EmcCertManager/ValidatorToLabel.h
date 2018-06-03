@@ -1,4 +1,4 @@
-﻿//ValidatorToLabel.h by Konstantine Kozachuck as neurocod
+﻿//ValidatorToLabel.h by Emercoin developers
 #pragma once
 
 class ValidatorToLabel: public QValidator {

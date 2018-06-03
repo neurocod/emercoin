@@ -1,4 +1,4 @@
-﻿//CertTableModel.h by Konstantine Kozachuck as neurocod - 2018.02.08 02:03:04
+﻿//CertTableModel.h by Emercoin developers
 #pragma once
 
 class CertTableModel: public QAbstractTableModel {

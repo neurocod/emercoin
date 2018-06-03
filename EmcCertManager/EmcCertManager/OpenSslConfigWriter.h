@@ -1,4 +1,4 @@
-﻿//OpenSslConfigWriter.h by Emercoin developers - 2018.05.28 01:55:26
+﻿//OpenSslConfigWriter.h by Emercoin developers
 #pragma once
 
 class OpenSslConfigWriter {

@@ -1,4 +1,4 @@
-﻿//OpenSslConfigWriter.cpp by Emercoin developers - 2018.05.28 01:55:26
+﻿//OpenSslConfigWriter.cpp by Emercoin developers
 #include "pch.h"
 #include "OpenSslConfigWriter.h"
 #include "ShellImitation.h"

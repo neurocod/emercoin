@@ -1,4 +1,4 @@
-﻿//Settings.h by Konstantine Kozachuck as neurocod - 2018.01.26 18:31:56
+﻿//Settings.h by Emercoin developers
 #pragma once
 
 class Settings {

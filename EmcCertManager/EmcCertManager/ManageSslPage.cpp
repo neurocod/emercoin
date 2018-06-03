@@ -1,4 +1,4 @@
-﻿//ManageSslPage.cpp by Konstantine Kozachuck as neurocod
+﻿//ManageSslPage.cpp by Emercoin developers
 #include "pch.h"
 #include "ManageSslPage.h"
 #include "Settings.h"

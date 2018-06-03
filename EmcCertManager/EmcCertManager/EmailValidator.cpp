@@ -1,4 +1,4 @@
-﻿//EmailValidator.cpp by Konstantine Kozachuck as neurocod - 2018.01.28 14:57:29
+﻿//EmailValidator.cpp by Emercoin developers
 #include "pch.h"
 #include "EmailValidator.h"
 

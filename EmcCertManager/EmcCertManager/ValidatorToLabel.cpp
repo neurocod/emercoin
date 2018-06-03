@@ -1,4 +1,4 @@
-﻿//ValidatorToLabel.cpp by Konstantine Kozachuck as neurocod
+﻿//ValidatorToLabel.cpp by Emercoin developers
 #include "pch.h"
 #include "ValidatorToLabel.h"
 

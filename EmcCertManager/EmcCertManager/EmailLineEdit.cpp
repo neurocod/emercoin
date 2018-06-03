@@ -1,4 +1,4 @@
-﻿//EmailLineEdit.cpp by Konstantine Kozachuck as neurocod - 2018.01.28 15:01:53
+﻿//EmailLineEdit.cpp by Emercoin developers
 #include "pch.h"
 #include "EmailLineEdit.h"
 

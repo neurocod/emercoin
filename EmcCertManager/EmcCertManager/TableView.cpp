@@ -1,4 +1,4 @@
-﻿//TableView.cpp by neurocod
+﻿//TableView.cpp
 #include "pch.h"
 #include "TableView.h"
 

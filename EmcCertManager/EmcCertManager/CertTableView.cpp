@@ -1,4 +1,4 @@
-﻿//CertTableView.cpp by Konstantine Kozachuck as neurocod - 2018.02.08 16:10:37
+﻿//CertTableView.cpp by Emercoin developers
 #include "pch.h"
 #include "CertTableView.h"
 #include "CertTableModel.h"

@@ -1,4 +1,4 @@
-﻿//InfoCardsWidget.cpp by Konstantine Kozachuck as neurocod - 2018.01.24 22:07:30
+﻿//InfoCardsWidget.cpp by Emercoin developers
 #include "pch.h"
 #include "InfoCardsWidget.h"
 

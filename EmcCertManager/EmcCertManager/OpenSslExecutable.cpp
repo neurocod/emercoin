@@ -1,4 +1,4 @@
-﻿//OpenSslExecutable.cpp by Emercoin developers - 2018.03.04 17:33:22
+﻿//OpenSslExecutable.cpp by Emercoin developers
 #include "pch.h"
 #include "OpenSslExecutable.h"
 #include "Settings.h"

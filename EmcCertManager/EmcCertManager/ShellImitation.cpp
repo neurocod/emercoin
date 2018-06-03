@@ -1,4 +1,4 @@
-﻿//ShellImitation.cpp by Emercoin developers - 2018.03.04 17:17:09
+﻿//ShellImitation.cpp by Emercoin developers
 #include "pch.h"
 #include "ShellImitation.h"
 #include "CertLogger.h"

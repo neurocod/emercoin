@@ -1,4 +1,4 @@
-﻿//CertLogger.h by Emercoin developers - 2018.05.23
+﻿//CertLogger.h by Emercoin developers
 #pragma once
 
 class CertLogger: public QTextBrowser {

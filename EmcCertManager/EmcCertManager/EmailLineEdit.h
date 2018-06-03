@@ -1,4 +1,4 @@
-﻿//EmailLineEdit.h by Konstantine Kozachuck as neurocod - 2018.01.28 15:01:53
+﻿//EmailLineEdit.h by Emercoin developers
 #pragma once
 #include "EmailValidator.h"
 

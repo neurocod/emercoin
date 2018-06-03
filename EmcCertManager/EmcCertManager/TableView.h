@@ -1,4 +1,4 @@
-﻿//TableView.h by neurocod
+﻿//TableView.h
 #pragma once
 
 class TableView: public QTableView {

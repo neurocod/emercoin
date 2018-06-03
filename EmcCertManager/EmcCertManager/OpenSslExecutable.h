@@ -1,4 +1,4 @@
-﻿//OpenSslExecutable.h by Emercoin developers - 2018.03.04 17:33:22
+﻿//OpenSslExecutable.h by Emercoin developers
 #pragma once
 class CertLogger;
 

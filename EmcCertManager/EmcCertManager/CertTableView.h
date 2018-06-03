@@ -1,4 +1,4 @@
-﻿//CertTableView.h by Konstantine Kozachuck as neurocod - 2018.02.08 16:10:37
+﻿//CertTableView.h by Emercoin developers
 #pragma once
 #include "TableView.h"
 class CertTableModel;

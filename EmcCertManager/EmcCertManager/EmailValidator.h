@@ -1,4 +1,4 @@
-﻿//EmailValidator.h by Konstantine Kozachuck as neurocod - 2018.01.28 14:57:29
+﻿//EmailValidator.h by Emercoin developers
 #pragma once
 #include "ValidatorToLabel.h"
 

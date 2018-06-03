@@ -1,4 +1,4 @@
-﻿//CertLogger.cpp by Emercoin developers - 2018.05.23
+﻿//CertLogger.cpp by Emercoin developers
 #include "pch.h"
 #include "CertLogger.h"
 

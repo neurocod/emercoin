@@ -1,4 +1,4 @@
-﻿//IPv6LineEdit.h by Konstantine Kozachuck as neurocod
+﻿//IPv6LineEdit.h by Emercoin developers
 #pragma once
 
 class IPv6LineEdit {

@@ -1,4 +1,4 @@
-﻿//ManageSslPage.h by Konstantine Kozachuck as neurocod
+﻿//ManageSslPage.h by Emercoin developers
 #pragma once
 class CertTableView;
 class CertLogger;

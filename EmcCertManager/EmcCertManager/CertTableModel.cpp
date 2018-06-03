@@ -1,4 +1,4 @@
-﻿//CertTableModel.cpp by Konstantine Kozachuck as neurocod - 2018.02.08 02:03:04
+﻿//CertTableModel.cpp by Emercoin developers
 #include "pch.h"
 #include "CertTableModel.h"
 #include "ShellImitation.h"

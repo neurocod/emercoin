@@ -1,4 +1,4 @@
-﻿//ShellImitation.h by Emercoin developers - 2018.03.04 17:17:09
+﻿//ShellImitation.h by Emercoin developers
 #pragma once
 #include "CertLogger.h"
 
