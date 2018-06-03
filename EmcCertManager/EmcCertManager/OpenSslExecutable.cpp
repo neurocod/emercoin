@@ -22,18 +22,57 @@ bool OpenSslExecutable::found() {
 	QFileInfo file(path());
 	return file.exists() && file.isExecutable();
 }
+struct OpenSslExecutable::SpecifyPathDialog: public QDialog {
+	QLineEdit* _path = 0;
+	SpecifyPathDialog() {
+		auto lay = new QFormLayout(this);
+		
+		auto label = new QLabel(
+				tr("No OpenSSL executable found, certificate creation will not work.<br/>\n"
+				"Please download OpenSSL from <a href=\"https://www.openssl.org/\">www.openssl.org</a> and place it in folder specified above.")
+			.arg(qApp->applicationDirPath()));
+		lay->addRow(label);
+
+		{
+			auto lay2 = new QHBoxLayout;
+			
+			_path = new QLineEdit;
+			_path->setText(path());
+			lay2->addWidget(_path);
+
+			auto browse = new QPushButton(tr("Browse"));
+			browse->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/standardbutton-open-32.png"));
+			lay2->addWidget(browse);
+			connect(browse, &QAbstractButton::clicked, this, &SpecifyPathDialog::onBrowse);
+			
+			lay->addRow(tr("OpenSSL executable:"), lay2);
+		}
+		{
+			auto box = new QDialogButtonBox;
+			lay->addRow(box);
+			auto ok = box->addButton(QDialogButtonBox::Ok);
+			auto cancel = box->addButton(QDialogButtonBox::Cancel);
+			ok->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/standardbutton-apply-32.png"));
+			cancel->setIcon(QIcon(":/qt-project.org/styles/commonstyle/images/standardbutton-cancel-32.png"));
+			connect(ok, &QAbstractButton::clicked, this, &QDialog::accept);
+			connect(cancel, &QAbstractButton::clicked, this, &QDialog::reject);
+		}
+	}
+	void onBrowse() {
+		QString s = QFileDialog::getOpenFileName(this, tr("Specify OpenSSL executable"), _path->text()
+#ifdef Q_OS_WIN
+			, tr("Executable (*.exe);;All files (*)")
+#endif
+			);
+		if(!s.isEmpty())
+			_path->setText(s);
+	}
+};
 bool OpenSslExecutable::isFoundOrMessageBox() {
 	if(found())
 		return true;
-	QMessageBox box(QMessageBox::Critical,
-		qApp->applicationDisplayName(),
-		tr("There is no OpenSSL executable in folder %1,<br/>\n"
-			"certificate creation will not work.<br/>\n"
-			"Please download OpenSSL from <a href=\"https://www.openssl.org/\">www.openssl.org</a> and place it there.")
-		.arg(path()));
-	box.setTextInteractionFlags(Qt::TextBrowserInteraction);
-	box.setTextFormat(Qt::RichText);
-	box.exec();
+	SpecifyPathDialog dlg;
+	dlg.exec();
 	return false;
 }
 QString OpenSslExecutable::errorString()const {

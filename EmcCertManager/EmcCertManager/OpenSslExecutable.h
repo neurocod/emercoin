@@ -23,4 +23,5 @@ class OpenSslExecutable: public QProcess {
 		bool deleteOrExit(QDir & dir, const QString & file, int tries=5);
 		void readToMe();
 		static QString path();
+		struct SpecifyPathDialog;
 };
